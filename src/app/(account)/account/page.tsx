@@ -1,0 +1,206 @@
+import { redirect } from "next/navigation";
+import Link from "next/link";
+import Image from "next/image";
+import { Cloud, HeartHandshake, Sprout } from "lucide-react";
+import { getCurrentProfile } from "@/lib/queries/profile";
+import { formatNaira } from "@/lib/format";
+import { listBadgeDefinitions, listEarnedBadges } from "@/lib/queries/badges";
+import { listMyTrees } from "@/lib/queries/trees";
+import { getTreePhotoUrl } from "@/lib/storage-urls";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
+const STATUS_LABEL: Record<string, string> = {
+  pending: "Pending review",
+  approved: "Verified",
+  rejected: "Rejected",
+  flagged: "Under review",
+};
+
+export default async function AccountPage() {
+  const profile = await getCurrentProfile();
+  if (!profile) redirect("/login");
+
+  const [allBadges, earnedBadges, trees] = await Promise.all([
+    listBadgeDefinitions(),
+    listEarnedBadges(profile.id),
+    listMyTrees(),
+  ]);
+
+  const earnedKeys = new Set(earnedBadges.map((b) => b.key));
+  const nextBadge = allBadges.find(
+    (b) => !earnedKeys.has(b.key) && b.treeThreshold > profile.treesPlantedCount
+  );
+  const progressPct = nextBadge
+    ? Math.min(100, Math.round((profile.treesPlantedCount / nextBadge.treeThreshold) * 100))
+    : 100;
+
+  return (
+    <div className="space-y-8">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">
+            {profile.fullName || "Your profile"}
+          </h1>
+          <p className="mt-1 text-muted-foreground">
+            {profile.email}
+            {profile.country ? ` · ${profile.country}` : ""}
+          </p>
+        </div>
+        <Button
+          nativeButton={false}
+          size="lg"
+          render={<Link href="/account/plant">Plant a tree</Link>}
+        />
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-3">
+        <Card className="border-border/80">
+          <CardHeader className="flex-row items-center justify-between pb-2 space-y-0">
+            <CardTitle className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+              Trees planted
+            </CardTitle>
+            <div className="flex size-8 items-center justify-center rounded-full bg-primary/10">
+              <Sprout className="size-4 text-primary" aria-hidden="true" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold text-foreground">{profile.treesPlantedCount}</p>
+          </CardContent>
+        </Card>
+        <Card className="border-border/80">
+          <CardHeader className="flex-row items-center justify-between pb-2 space-y-0">
+            <CardTitle className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+              Estimated CO2 offset
+            </CardTitle>
+            <div className="flex size-8 items-center justify-center rounded-full bg-primary/10">
+              <Cloud className="size-4 text-primary" aria-hidden="true" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold text-foreground">{profile.co2EstimatedKg} kg</p>
+          </CardContent>
+        </Card>
+        <Card className="border-border/80">
+          <CardHeader className="flex-row items-center justify-between pb-2 space-y-0">
+            <CardTitle className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+              Total donated
+            </CardTitle>
+            <div className="flex size-8 items-center justify-center rounded-full bg-primary/10">
+              <HeartHandshake className="size-4 text-primary" aria-hidden="true" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold text-foreground">
+              {formatNaira(profile.donationsTotalKobo)}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="space-y-3">
+        <h2 className="text-lg font-bold tracking-tight">Badges</h2>
+        <div className="grid grid-cols-3 gap-3 sm:grid-cols-5 lg:grid-cols-9">
+          {allBadges.map((badge) => {
+            const earned = earnedKeys.has(badge.key);
+            return (
+              <div
+                key={badge.id}
+                className={`flex flex-col items-center gap-1 rounded-xl border p-3 text-center transition-transform ${
+                  earned
+                    ? "border-primary/30 bg-primary/5 hover:-translate-y-0.5"
+                    : "border-border opacity-40 grayscale"
+                }`}
+                title={badge.description}
+              >
+                <span className="text-2xl" aria-hidden="true">
+                  {badge.icon}
+                </span>
+                <span className="text-xs font-semibold">{badge.name}</span>
+                <span className="text-[0.65rem] text-muted-foreground">
+                  {badge.treeThreshold}+ trees
+                </span>
+              </div>
+            );
+          })}
+        </div>
+        {nextBadge && (
+          <div className="space-y-1.5">
+            <div
+              role="progressbar"
+              aria-valuenow={progressPct}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label={`Progress toward ${nextBadge.name} badge`}
+              className="h-2 w-full max-w-sm overflow-hidden rounded-full bg-muted"
+            >
+              <div
+                className="h-full rounded-full bg-primary transition-all"
+                style={{ width: `${progressPct}%` }}
+              />
+            </div>
+            <p className="text-sm text-muted-foreground">
+              {nextBadge.treeThreshold - profile.treesPlantedCount} more verified{" "}
+              {nextBadge.treeThreshold - profile.treesPlantedCount === 1
+                ? "tree"
+                : "trees"}{" "}
+              to earn {nextBadge.icon} {nextBadge.name}.
+            </p>
+          </div>
+        )}
+      </div>
+
+      <div className="space-y-3">
+        <h2 className="text-lg font-bold tracking-tight">Your trees</h2>
+        {trees.length === 0 ? (
+          <Card className="border-dashed">
+            <CardContent className="py-8 text-center text-sm text-muted-foreground">
+              You haven&apos;t logged a tree yet.
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {trees.map((tree) => (
+              <Link
+                key={tree.id}
+                href={`/trees/${tree.id}`}
+                className="rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              >
+                <Card className="h-full overflow-hidden border-border/80 transition-all hover:-translate-y-0.5 hover:shadow-md">
+                  <div className="relative h-32 w-full">
+                    <Image
+                      src={getTreePhotoUrl(tree.photoPath)}
+                      alt={tree.species}
+                      fill
+                      sizes="(min-width: 1024px) 25vw, 50vw"
+                      className="object-cover"
+                    />
+                  </div>
+                  <CardContent className="space-y-1 pt-4">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="font-medium">{tree.species}</p>
+                      <Badge
+                        variant={tree.status === "approved" ? "default" : "outline"}
+                      >
+                        {STATUS_LABEL[tree.status]}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      {new Date(tree.observedAt).toLocaleDateString()}
+                    </p>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

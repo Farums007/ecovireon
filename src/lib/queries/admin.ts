@@ -159,6 +159,7 @@ export type AdminUser = {
   treesPlantedCount: number;
   isPlatformAdmin: boolean;
   createdAt: string;
+  isBanned: boolean;
 };
 
 export async function listAllUsers(
@@ -174,9 +175,18 @@ export async function listAllUsers(
 
   if (accountType) query = query.eq("account_type", accountType);
 
-  const { data, error } = await query;
+  const [{ data, error }, { data: banStatus }] = await Promise.all([
+    query,
+    supabase.rpc("list_user_ban_status"),
+  ]);
 
   if (error) throw new Error(error.message);
+
+  const bannedIds = new Set(
+    ((banStatus ?? []) as { id: string; banned_until: string | null }[])
+      .filter((row) => row.banned_until && new Date(row.banned_until) > new Date())
+      .map((row) => row.id)
+  );
 
   return (data ?? []).map((row) => {
     const org = Array.isArray(row.organizations) ? row.organizations[0] : row.organizations;
@@ -187,6 +197,7 @@ export async function listAllUsers(
       role: row.role,
       organizationName: org?.name ?? null,
       country: row.country,
+      isBanned: bannedIds.has(row.id),
       treesPlantedCount: row.trees_planted_count,
       isPlatformAdmin: row.is_platform_admin,
       createdAt: row.created_at,

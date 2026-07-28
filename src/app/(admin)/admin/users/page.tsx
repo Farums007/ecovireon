@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { listAllUsers } from "@/lib/queries/admin";
+import { getCurrentProfile } from "@/lib/queries/profile";
+import { UserRowActions } from "@/app/(admin)/admin/users/user-row-actions";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -25,7 +27,10 @@ export default async function AdminUsersPage({
 }) {
   const { type } = await searchParams;
   const accountType = type === "individual" || type === "organization" ? type : undefined;
-  const users = await listAllUsers(accountType);
+  const [users, currentProfile] = await Promise.all([
+    listAllUsers(accountType),
+    getCurrentProfile(),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -64,6 +69,7 @@ export default async function AdminUsersPage({
                 <TableHead>Country</TableHead>
                 <TableHead>Trees</TableHead>
                 <TableHead>Joined</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -80,6 +86,7 @@ export default async function AdminUsersPage({
                       {user.isPlatformAdmin && (
                         <Badge variant="secondary">Platform admin</Badge>
                       )}
+                      {user.isBanned && <Badge variant="destructive">Banned</Badge>}
                     </div>
                   </TableCell>
                   <TableCell>
@@ -99,6 +106,15 @@ export default async function AdminUsersPage({
                   <TableCell className="font-medium">{user.treesPlantedCount}</TableCell>
                   <TableCell className="text-muted-foreground">
                     {new Date(user.createdAt).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell>
+                    {currentProfile && currentProfile.id !== user.id && (
+                      <UserRowActions
+                        userId={user.id}
+                        userName={user.fullName}
+                        isBanned={user.isBanned}
+                      />
+                    )}
                   </TableCell>
                 </TableRow>
               ))}

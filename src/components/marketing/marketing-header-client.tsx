@@ -11,8 +11,8 @@ import { logout } from "@/app/(auth)/actions";
 const NAV_LINKS = [
   { href: "/explore", label: "Explore map" },
   { href: "/donate", label: "Donate" },
-  { href: "/#why-it-matters", label: "Why it matters" },
-  { href: "/#contact", label: "Contact" },
+  { href: "/why-it-matters", label: "Why it matters" },
+  { href: "/contact", label: "Contact" },
 ];
 
 type HeaderProfile = {

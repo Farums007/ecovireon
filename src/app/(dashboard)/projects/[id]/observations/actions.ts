@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/queries/profile";
+import { getProject } from "@/lib/queries/projects";
 
 export type ObservationFormState = { error: string } | null;
 
@@ -26,6 +27,9 @@ export async function createObservation(
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
 
+  const project = await getProject(projectId);
+  if (!project) return { error: "Project not found." };
+
   const lat = formData.get("lat");
   const lng = formData.get("lng");
 
@@ -35,7 +39,10 @@ export async function createObservation(
 
   const photoPaths: string[] = [];
   for (const photo of photos) {
-    const path = `${profile.organizationId}/${projectId}/${Date.now()}-${photo.name}`;
+    // Keyed by the project's own org, not the submitter's — a project
+    // member from another org (or an individual account) has no org of
+    // their own, but still needs a path the storage RLS policy accepts.
+    const path = `${project.organizationId}/${projectId}/${Date.now()}-${photo.name}`;
     const { error: uploadError } = await supabase.storage
       .from("field-photos")
       .upload(path, photo, { contentType: photo.type });
@@ -60,6 +67,13 @@ export async function createObservation(
     return { error: error.message };
   }
 
-  revalidatePath(`/projects/${projectId}`);
-  redirect(`/projects/${projectId}`);
+  // Individuals (and org members from a different org) can't reach the
+  // org dashboard's /projects/[id] — they land on the account-scoped copy.
+  const returnPath =
+    profile.accountType === "individual"
+      ? `/account/projects/${projectId}`
+      : `/projects/${projectId}`;
+
+  revalidatePath(returnPath);
+  redirect(returnPath);
 }

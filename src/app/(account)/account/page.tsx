@@ -6,6 +6,7 @@ import { getCurrentProfile } from "@/lib/queries/profile";
 import { formatNaira } from "@/lib/format";
 import { listBadgeDefinitions, listEarnedBadges } from "@/lib/queries/badges";
 import { listMyTrees } from "@/lib/queries/trees";
+import { listMyProjects } from "@/lib/queries/projects";
 import { getTreePhotoUrl } from "@/lib/storage-urls";
 import { EditProfileDialog } from "@/app/(account)/account/edit-profile-dialog";
 import { Button } from "@/components/ui/button";
@@ -29,10 +30,11 @@ export default async function AccountPage() {
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
 
-  const [allBadges, earnedBadges, trees] = await Promise.all([
+  const [allBadges, earnedBadges, trees, myProjects] = await Promise.all([
     listBadgeDefinitions(),
     listEarnedBadges(profile.id),
     listMyTrees(),
+    listMyProjects(profile.id),
   ]);
 
   const earnedKeys = new Set(earnedBadges.map((b) => b.key));
@@ -137,6 +139,34 @@ export default async function AccountPage() {
           </CardContent>
         </Card>
       </div>
+
+      {myProjects.length > 0 && (
+        <div className="space-y-3">
+          <h2 className="text-lg font-bold tracking-tight">Your projects</h2>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {myProjects.map(({ project, role, title }) => (
+              <Link
+                key={project.id}
+                href={`/account/projects/${project.id}`}
+                className="rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              >
+                <Card className="h-full border-border/80 transition-all hover:-translate-y-0.5 hover:shadow-md">
+                  <CardHeader>
+                    <CardTitle className="text-sm font-semibold">{project.name}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex flex-wrap items-center gap-2 text-sm">
+                    <Badge className="capitalize">{project.status}</Badge>
+                    <Badge variant="secondary" className="capitalize">
+                      {role.replace("_", " ")}
+                      {title ? ` · ${title}` : ""}
+                    </Badge>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="space-y-3">
         <h2 className="text-lg font-bold tracking-tight">Badges</h2>

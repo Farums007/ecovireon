@@ -19,12 +19,13 @@ export async function generateReport(
 ): Promise<ReportFormState> {
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
-  if (profile.role !== "admin") {
-    return { error: "Only admins can generate reports." };
-  }
 
   const project = await getProject(projectId);
   if (!project) return { error: "Project not found." };
+
+  if (profile.role !== "admin" || profile.organizationId !== project.organizationId) {
+    return { error: "Only this project's organization admin can generate reports." };
+  }
 
   const title = String(formData.get("title") ?? "");
   const periodStart = String(formData.get("periodStart") ?? "");
@@ -65,7 +66,7 @@ export async function generateReport(
   );
 
   const reportId = crypto.randomUUID();
-  const basePath = `${profile.organizationId}/${projectId}/${reportId}`;
+  const basePath = `${project.organizationId}/${projectId}/${reportId}`;
   const csvPath = `${basePath}.csv`;
   const pdfPath = `${basePath}.pdf`;
 

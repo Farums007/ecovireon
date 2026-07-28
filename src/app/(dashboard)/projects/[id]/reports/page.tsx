@@ -42,7 +42,9 @@ export default async function ReportsPage({
         <p className="mt-1 text-muted-foreground">{project.name}</p>
       </div>
 
-      {profile?.role === "admin" && <ReportForm projectId={id} />}
+      {profile?.role === "admin" && profile.organizationId === project.organizationId && (
+        <ReportForm projectId={id} />
+      )}
 
       <div className="space-y-3">
         {reports.length === 0 ? (

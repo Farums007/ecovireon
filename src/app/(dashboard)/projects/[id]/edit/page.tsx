@@ -9,11 +9,11 @@ export default async function EditProjectPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const profile = await getCurrentProfile();
-  if (profile?.role !== "admin") redirect(`/projects/${id}`);
-
-  const project = await getProject(id);
+  const [profile, project] = await Promise.all([getCurrentProfile(), getProject(id)]);
   if (!project) notFound();
+  if (profile?.role !== "admin" || profile.organizationId !== project.organizationId) {
+    redirect(`/projects/${id}`);
+  }
 
   return (
     <div className="space-y-6">

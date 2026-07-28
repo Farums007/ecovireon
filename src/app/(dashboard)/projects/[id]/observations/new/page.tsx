@@ -2,7 +2,7 @@ import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { getCurrentProfile } from "@/lib/queries/profile";
-import { getProject } from "@/lib/queries/projects";
+import { getProject, listProjectMembers, effectiveProjectRole } from "@/lib/queries/projects";
 import { ObservationForm } from "@/app/(dashboard)/projects/[id]/observations/new/observation-form";
 
 export default async function NewObservationPage({
@@ -11,11 +11,15 @@ export default async function NewObservationPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const profile = await getCurrentProfile();
-  if (profile && profile.role === "verifier") redirect(`/projects/${id}`);
-
-  const project = await getProject(id);
+  const [profile, project, members] = await Promise.all([
+    getCurrentProfile(),
+    getProject(id),
+    listProjectMembers(id),
+  ]);
   if (!project) notFound();
+
+  const myRole = effectiveProjectRole(project, profile, members);
+  if (myRole !== "admin" && myRole !== "field_staff") redirect(`/projects/${id}`);
 
   return (
     <div className="space-y-6">

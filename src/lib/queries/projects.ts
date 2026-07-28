@@ -111,10 +111,13 @@ export async function getProject(id: string): Promise<Project | null> {
   return data ? mapRow(data) : null;
 }
 
+export type ProjectRole = "admin" | "field_staff" | "verifier";
+
 export type ProjectMember = {
   userId: string;
   fullName: string;
-  role: string;
+  role: ProjectRole;
+  title: string | null;
 };
 
 export async function listProjectMembers(
@@ -123,7 +126,7 @@ export async function listProjectMembers(
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("project_members")
-    .select("user_id, profiles(full_name, role)")
+    .select("user_id, role, title, profiles(full_name)")
     .eq("project_id", projectId);
 
   if (error) throw new Error(error.message);
@@ -133,7 +136,53 @@ export async function listProjectMembers(
     return {
       userId: row.user_id,
       fullName: profile?.full_name ?? "",
-      role: profile?.role ?? "",
+      role: row.role,
+      title: row.title,
     };
   });
+}
+
+// A caller's org-wide role only applies to projects their own org owns.
+// For a project they were added to from outside that org (or as an
+// individual, who has no org role at all), their access is governed by
+// their project_members.role instead. Mirrors can_access_project/
+// project_member_role in migration 0017 — keep in sync with those.
+export function effectiveProjectRole(
+  project: Pick<Project, "organizationId">,
+  profile: { id: string; organizationId: string | null; role: ProjectRole | null } | null,
+  members: Pick<ProjectMember, "userId" | "role">[]
+): ProjectRole | null {
+  if (!profile) return null;
+  if (profile.organizationId && profile.organizationId === project.organizationId) {
+    return profile.role;
+  }
+  return members.find((m) => m.userId === profile.id)?.role ?? null;
+}
+
+export type MyProject = {
+  project: Project;
+  role: ProjectRole;
+  title: string | null;
+};
+
+// Projects the current user has been added to directly (not necessarily
+// their own org's registry) — the individual-account "your projects" view.
+// project_members has no FK to the projects_geo *view*, only the raw
+// table, so this can't be a single embedded query — fetch memberships,
+// then each project through the same GeoJSON-safe path getProject uses.
+export async function listMyProjects(userId: string): Promise<MyProject[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("project_members")
+    .select("project_id, role, title")
+    .eq("user_id", userId);
+
+  if (error) throw new Error(error.message);
+  if (!data || data.length === 0) return [];
+
+  const projects = await Promise.all(data.map((row) => getProject(row.project_id)));
+
+  return data
+    .map((row, i) => ({ project: projects[i], role: row.role, title: row.title }))
+    .filter((entry): entry is MyProject => entry.project !== null);
 }

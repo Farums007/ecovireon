@@ -76,3 +76,32 @@ export async function logout() {
   await supabase.auth.signOut();
   redirect("/login");
 }
+
+// Lands here after an invited user (no password yet) clicks their invite
+// email and /auth/callback exchanges the code for a session.
+export async function setPassword(
+  _prevState: AuthActionState,
+  formData: FormData
+): Promise<AuthActionState> {
+  const password = String(formData.get("password") ?? "");
+  const fullName = String(formData.get("fullName") ?? "").trim();
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  const { error: passwordError } = await supabase.auth.updateUser({ password });
+  if (passwordError) return { error: passwordError.message };
+
+  if (fullName) {
+    const { error: profileError } = await supabase
+      .from("profiles")
+      .update({ full_name: fullName })
+      .eq("id", user.id);
+    if (profileError) return { error: profileError.message };
+  }
+
+  redirect("/account");
+}

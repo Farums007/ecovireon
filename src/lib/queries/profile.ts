@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getAvatarUrl } from "@/lib/storage-urls";
 
 export type Role = "admin" | "field_staff" | "verifier";
 export type AccountType = "organization" | "individual";
@@ -16,6 +17,8 @@ export type CurrentProfile = {
   treesPlantedCount: number;
   co2EstimatedKg: number;
   donationsTotalKobo: number;
+  avatarPath: string | null;
+  avatarUrl: string | null;
 };
 
 export async function getCurrentProfile(): Promise<CurrentProfile | null> {
@@ -29,7 +32,7 @@ export async function getCurrentProfile(): Promise<CurrentProfile | null> {
   const { data, error } = await supabase
     .from("profiles")
     .select(
-      "id, full_name, account_type, role, organization_id, country, is_platform_admin, trees_planted_count, co2_estimated_kg, donations_total_kobo, organizations(name)"
+      "id, full_name, account_type, role, organization_id, country, is_platform_admin, trees_planted_count, co2_estimated_kg, donations_total_kobo, avatar_path, organizations(name)"
     )
     .eq("id", user.id)
     .single();
@@ -53,5 +56,7 @@ export async function getCurrentProfile(): Promise<CurrentProfile | null> {
     treesPlantedCount: data.trees_planted_count,
     co2EstimatedKg: Number(data.co2_estimated_kg),
     donationsTotalKobo: Number(data.donations_total_kobo),
+    avatarPath: data.avatar_path,
+    avatarUrl: data.avatar_path ? getAvatarUrl(data.avatar_path) : null,
   };
 }

@@ -8,8 +8,10 @@ export const metadata: Metadata = {
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ confirmEmail?: string }>;
+  searchParams: Promise<{ confirmEmail?: string; redirectTo?: string }>;
 }) {
-  const { confirmEmail } = await searchParams;
-  return <LoginForm justSignedUp={confirmEmail === "1"} />;
+  const { confirmEmail, redirectTo } = await searchParams;
+  return (
+    <LoginForm justSignedUp={confirmEmail === "1"} redirectTo={redirectTo} />
+  );
 }

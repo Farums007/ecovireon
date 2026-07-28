@@ -5,12 +5,21 @@ import { createClient } from "@/lib/supabase/server";
 
 export type AuthActionState = { error: string } | null;
 
+// Only ever redirect to a same-site relative path after login — a raw
+// query param here would otherwise be an open-redirect vector.
+function safeRedirectTarget(raw: FormDataEntryValue | null): string {
+  const value = String(raw ?? "");
+  if (value.startsWith("/") && !value.startsWith("//")) return value;
+  return "/";
+}
+
 export async function login(
   _prevState: AuthActionState,
   formData: FormData
 ): Promise<AuthActionState> {
   const email = String(formData.get("email") ?? "");
   const password = String(formData.get("password") ?? "");
+  const redirectTo = safeRedirectTarget(formData.get("redirectTo"));
 
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({
@@ -22,7 +31,7 @@ export async function login(
     return { error: error.message };
   }
 
-  redirect("/");
+  redirect(redirectTo);
 }
 
 export async function signup(

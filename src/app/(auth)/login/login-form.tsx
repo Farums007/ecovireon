@@ -15,7 +15,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export function LoginForm({ justSignedUp }: { justSignedUp: boolean }) {
+export function LoginForm({
+  justSignedUp,
+  redirectTo,
+}: {
+  justSignedUp: boolean;
+  redirectTo?: string;
+}) {
   const [state, formAction, pending] = useActionState<
     AuthActionState,
     FormData
@@ -40,6 +46,9 @@ export function LoginForm({ justSignedUp }: { justSignedUp: boolean }) {
           </div>
         )}
         <form action={formAction} className="space-y-4" noValidate>
+          {redirectTo && (
+            <input type="hidden" name="redirectTo" value={redirectTo} />
+          )}
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input

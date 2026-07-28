@@ -7,8 +7,10 @@ import { formatNaira } from "@/lib/format";
 import { listBadgeDefinitions, listEarnedBadges } from "@/lib/queries/badges";
 import { listMyTrees } from "@/lib/queries/trees";
 import { getTreePhotoUrl } from "@/lib/storage-urls";
+import { EditProfileDialog } from "@/app/(account)/account/edit-profile-dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Card,
   CardContent,
@@ -41,23 +43,55 @@ export default async function AccountPage() {
     ? Math.min(100, Math.round((profile.treesPlantedCount / nextBadge.treeThreshold) * 100))
     : 100;
 
+  const initials = profile.fullName
+    ? profile.fullName
+        .split(" ")
+        .map((part) => part[0])
+        .slice(0, 2)
+        .join("")
+        .toUpperCase()
+    : "?";
+
   return (
     <div className="space-y-8">
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">
-            {profile.fullName || "Your profile"}
-          </h1>
-          <p className="mt-1 text-muted-foreground">
-            {profile.email}
-            {profile.country ? ` · ${profile.country}` : ""}
-          </p>
+        <div className="flex items-center gap-4">
+          <Avatar className="size-16 border border-border">
+            {profile.avatarUrl && <AvatarImage src={profile.avatarUrl} alt="" />}
+            <AvatarFallback className="bg-primary/10 text-lg font-semibold text-primary">
+              {initials}
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">
+              {profile.fullName || "Your profile"}
+            </h1>
+            <p className="mt-1 text-muted-foreground">
+              {profile.email}
+              {profile.country ? ` · ${profile.country}` : ""}
+            </p>
+          </div>
         </div>
-        <Button
-          nativeButton={false}
-          size="lg"
-          render={<Link href="/account/plant">Plant a tree</Link>}
-        />
+        <div className="flex flex-wrap items-center gap-2">
+          <EditProfileDialog
+            fullName={profile.fullName}
+            country={profile.country}
+            avatarUrl={profile.avatarUrl}
+            showCountry={profile.accountType === "individual"}
+            initials={initials}
+          />
+          <Button
+            nativeButton={false}
+            variant="outline"
+            size="lg"
+            render={<Link href="/donate">Donate</Link>}
+          />
+          <Button
+            nativeButton={false}
+            size="lg"
+            render={<Link href="/account/plant">Plant a tree</Link>}
+          />
+        </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">

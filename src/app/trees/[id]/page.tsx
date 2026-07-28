@@ -3,10 +3,12 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { Calendar, Cloud, MapPin, Ruler, Sprout, User } from "lucide-react";
 import { getTree } from "@/lib/queries/trees";
+import { listTreeCheckins } from "@/lib/queries/tree-checkins";
 import { getTreePhotoUrl } from "@/lib/storage-urls";
 import { getCurrentProfile } from "@/lib/queries/profile";
 import { MarketingHeader } from "@/components/marketing/marketing-header";
 import { MarketingFooter } from "@/components/marketing/marketing-footer";
+import { CheckinDialog } from "@/app/trees/[id]/checkin-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -58,7 +60,11 @@ export default async function TreeDetailPage({
 }) {
   const { id } = await params;
   const { justPlanted } = await searchParams;
-  const [tree, profile] = await Promise.all([getTree(id), getCurrentProfile()]);
+  const [tree, profile, checkins] = await Promise.all([
+    getTree(id),
+    getCurrentProfile(),
+    listTreeCheckins(id),
+  ]);
   if (!tree) notFound();
 
   const isOwner = profile?.id === tree.ownerId;
@@ -88,13 +94,16 @@ export default async function TreeDetailPage({
           </p>
         )}
 
-        <div className="mb-6 flex items-center justify-between gap-2">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-2">
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
             {tree.species}
           </h1>
-          <Badge variant={tree.status === "approved" ? "default" : "outline"}>
-            {STATUS_LABEL[tree.status]}
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge variant={tree.status === "approved" ? "default" : "outline"}>
+              {STATUS_LABEL[tree.status]}
+            </Badge>
+            {isOwner && <CheckinDialog treeId={id} />}
+          </div>
         </div>
 
         <div className="relative mb-6 h-72 w-full overflow-hidden rounded-xl border border-border shadow-sm sm:h-96">
@@ -153,6 +162,43 @@ export default async function TreeDetailPage({
             </CardContent>
           </Card>
         </div>
+
+        {checkins.length > 0 && (
+          <div className="mt-8 space-y-3">
+            <h2 className="text-lg font-bold tracking-tight">Growth timeline</h2>
+            <div className="space-y-4">
+              {checkins.map((checkin) => (
+                <Card key={checkin.id} className="border-border/80">
+                  <CardContent className="flex flex-col gap-3 pt-6 sm:flex-row">
+                    {checkin.photoPath && (
+                      <div className="relative h-32 w-full shrink-0 overflow-hidden rounded-lg border border-border sm:w-32">
+                        <Image
+                          src={getTreePhotoUrl(checkin.photoPath)}
+                          alt={`${tree.species} check-in photo`}
+                          fill
+                          sizes="128px"
+                          className="object-cover"
+                        />
+                      </div>
+                    )}
+                    <div className="min-w-0 flex-1 space-y-1 text-sm">
+                      <p className="font-medium text-foreground">
+                        {new Date(checkin.observedAt).toLocaleDateString()}
+                      </p>
+                      {checkin.heightNote && (
+                        <p className="text-muted-foreground">
+                          <span className="font-medium text-foreground">Height:</span>{" "}
+                          {checkin.heightNote}
+                        </p>
+                      )}
+                      {checkin.notes && <p className="text-foreground/90">{checkin.notes}</p>}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
       </main>
       <MarketingFooter />
     </div>

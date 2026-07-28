@@ -74,9 +74,10 @@ export function ShareButton({
       />
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Share</DialogTitle>
+          <DialogTitle>Share your impact with the world.</DialogTitle>
           <DialogDescription>
-            Anyone with this link can view it — it isn&apos;t listed or searchable.
+            Anyone with this link can view your planted trees or restoration
+            project and celebrate your contribution to a greener future.
           </DialogDescription>
         </DialogHeader>
 

@@ -14,6 +14,7 @@ import { ProjectBoundaryMap } from "@/components/map/project-boundary-map";
 import { MetricsDashboard } from "@/app/(dashboard)/projects/[id]/metrics-dashboard";
 import { DeleteProjectButton } from "@/app/(dashboard)/projects/[id]/delete-project-button";
 import { TeamCard } from "@/app/(dashboard)/projects/[id]/team-card";
+import { ShareButton } from "@/components/share-button";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -78,6 +79,14 @@ export default async function ProjectDetailPage({
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Badge className="capitalize">{project.status}</Badge>
+          {project.isPublic && (
+            <ShareButton
+              url={`${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/explore/projects/${id}`}
+              text={`See the progress on ${project.name}, a restoration project on Ecovireon.`}
+              label="Share"
+              size="sm"
+            />
+          )}
           <Button
             nativeButton={false}
             variant="outline"

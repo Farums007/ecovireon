@@ -91,6 +91,21 @@ export async function getTree(id: string): Promise<Tree | null> {
   return data ? mapRow(data) : null;
 }
 
+// Approved trees for a specific owner — used by the individual's public
+// share profile, which anyone with the link can view.
+export async function listTreesByOwner(ownerId: string): Promise<Tree[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("trees_geo")
+    .select("*")
+    .eq("owner_id", ownerId)
+    .eq("status", "approved")
+    .order("observed_at", { ascending: false });
+
+  if (error) throw new Error(error.message);
+  return (data ?? []).map(mapRow);
+}
+
 export async function listMyTrees(): Promise<Tree[]> {
   const supabase = await createClient();
   const {

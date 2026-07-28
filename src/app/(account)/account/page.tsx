@@ -9,6 +9,7 @@ import { listMyTrees } from "@/lib/queries/trees";
 import { listMyProjects } from "@/lib/queries/projects";
 import { getTreePhotoUrl } from "@/lib/storage-urls";
 import { EditProfileDialog } from "@/app/(account)/account/edit-profile-dialog";
+import { ShareButton } from "@/components/share-button";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -54,6 +55,8 @@ export default async function AccountPage() {
         .toUpperCase()
     : "?";
 
+  const profileUrl = `${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/u/${profile.id}`;
+
   return (
     <div className="space-y-8">
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -82,6 +85,14 @@ export default async function AccountPage() {
             showCountry={profile.accountType === "individual"}
             initials={initials}
           />
+          {profile.accountType === "individual" && (
+            <ShareButton
+              url={profileUrl}
+              text={`I've planted ${profile.treesPlantedCount} verified ${profile.treesPlantedCount === 1 ? "tree" : "trees"} on Ecovireon 🌱`}
+              label="Share profile"
+              size="lg"
+            />
+          )}
           <Button
             nativeButton={false}
             variant="outline"
@@ -176,7 +187,7 @@ export default async function AccountPage() {
             return (
               <div
                 key={badge.id}
-                className={`flex flex-col items-center gap-1 rounded-xl border p-3 text-center transition-transform ${
+                className={`group/badge relative flex flex-col items-center gap-1 rounded-xl border p-3 text-center transition-transform ${
                   earned
                     ? "border-primary/30 bg-primary/5 hover:-translate-y-0.5"
                     : "border-border opacity-40 grayscale"
@@ -190,6 +201,16 @@ export default async function AccountPage() {
                 <span className="text-[0.65rem] text-muted-foreground">
                   {badge.treeThreshold}+ trees
                 </span>
+                {earned && profile.accountType === "individual" && (
+                  <div className="absolute -top-2 -right-2 opacity-0 transition-opacity group-hover/badge:opacity-100 focus-within:opacity-100">
+                    <ShareButton
+                      url={profileUrl}
+                      text={`I just earned the ${badge.icon} ${badge.name} badge on Ecovireon!`}
+                      label=""
+                      size="icon-sm"
+                    />
+                  </div>
+                )}
               </div>
             );
           })}

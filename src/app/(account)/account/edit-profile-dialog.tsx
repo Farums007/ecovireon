@@ -27,12 +27,14 @@ export function EditProfileDialog({
   avatarUrl,
   showCountry,
   initials,
+  trigger,
 }: {
   fullName: string;
   country: string | null;
   avatarUrl: string | null;
   showCountry: boolean;
   initials: string;
+  trigger?: React.ReactElement;
 }) {
   const [open, setOpen] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
@@ -61,10 +63,12 @@ export function EditProfileDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         render={
-          <Button variant="outline">
-            <Pencil className="size-4" aria-hidden="true" />
-            Edit profile
-          </Button>
+          trigger ?? (
+            <Button variant="outline">
+              <Pencil className="size-4" aria-hidden="true" />
+              Edit profile
+            </Button>
+          )
         }
       />
       <DialogContent>

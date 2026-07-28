@@ -61,13 +61,30 @@ export type ReviewTree = {
   ownerName: string;
 };
 
-export async function listTreesForReview(): Promise<ReviewTree[]> {
+export type TreeStatusFilter =
+  | "review"
+  | "pending"
+  | "flagged"
+  | "approved"
+  | "rejected"
+  | "all";
+
+export async function listTreesForReview(
+  filter: TreeStatusFilter = "review"
+): Promise<ReviewTree[]> {
   const supabase = await createClient();
-  const { data: trees, error } = await supabase
+  let query = supabase
     .from("trees")
-    .select("id, species, status, photo_path, observed_at, gps_accuracy_m, owner_id")
-    .in("status", ["pending", "flagged"])
-    .order("created_at", { ascending: true });
+    .select("id, species, status, photo_path, observed_at, gps_accuracy_m, owner_id");
+
+  if (filter === "review") {
+    query = query.in("status", ["pending", "flagged"]).order("created_at", { ascending: true });
+  } else {
+    query = query.order("created_at", { ascending: false });
+    if (filter !== "all") query = query.eq("status", filter);
+  }
+
+  const { data: trees, error } = await query;
 
   if (error) throw new Error(error.message);
   if (!trees || trees.length === 0) return [];
@@ -144,14 +161,20 @@ export type AdminUser = {
   createdAt: string;
 };
 
-export async function listAllUsers(): Promise<AdminUser[]> {
+export async function listAllUsers(
+  accountType?: "individual" | "organization"
+): Promise<AdminUser[]> {
   const supabase = await createClient();
-  const { data, error } = await supabase
+  let query = supabase
     .from("profiles")
     .select(
       "id, full_name, account_type, role, country, trees_planted_count, is_platform_admin, created_at, organizations(name)"
     )
     .order("created_at", { ascending: false });
+
+  if (accountType) query = query.eq("account_type", accountType);
+
+  const { data, error } = await query;
 
   if (error) throw new Error(error.message);
 

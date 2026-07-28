@@ -67,6 +67,8 @@ export function TreeReviewCard({
     }
   }, [rejectPending, rejectState, tree.species]);
 
+  const actionable = tree.status === "pending" || tree.status === "flagged";
+
   return (
     <Card className="overflow-hidden border-border/80">
       <div className="relative h-40 w-full">
@@ -93,6 +95,8 @@ export function TreeReviewCard({
           {tree.gpsAccuracyM ? ` · ±${Math.round(tree.gpsAccuracyM)}m` : ""}
         </p>
 
+        {actionable && (
+        <>
         <form action={approveAction}>
           <input type="hidden" name="treeId" value={tree.id} />
           <Button type="submit" size="sm" className="w-full" disabled={approvePending}>
@@ -154,6 +158,13 @@ export function TreeReviewCard({
             </form>
           </DialogContent>
         </Dialog>
+        </>
+        )}
+        {!actionable && (
+          <p className="text-xs text-muted-foreground">
+            {tree.status === "approved" ? "Verified — counted toward badges." : "Rejected."}
+          </p>
+        )}
       </CardContent>
     </Card>
   );

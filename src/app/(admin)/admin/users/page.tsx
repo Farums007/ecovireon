@@ -1,6 +1,8 @@
+import Link from "next/link";
 import { listAllUsers } from "@/lib/queries/admin";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import {
   Table,
   TableBody,
@@ -10,8 +12,20 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-export default async function AdminUsersPage() {
-  const users = await listAllUsers();
+const FILTERS = [
+  { value: undefined, label: "All" },
+  { value: "individual", label: "Individuals" },
+  { value: "organization", label: "Organizations" },
+] as const;
+
+export default async function AdminUsersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ type?: string }>;
+}) {
+  const { type } = await searchParams;
+  const accountType = type === "individual" || type === "organization" ? type : undefined;
+  const users = await listAllUsers(accountType);
 
   return (
     <div className="space-y-6">
@@ -19,6 +33,26 @@ export default async function AdminUsersPage() {
         <h1 className="text-2xl font-bold tracking-tight">Users</h1>
         <p className="mt-1 text-muted-foreground">{users.length} accounts.</p>
       </div>
+
+      <div className="flex flex-wrap gap-1.5" role="tablist" aria-label="Filter users">
+        {FILTERS.map((f) => (
+          <Link
+            key={f.label}
+            href={f.value ? `/admin/users?type=${f.value}` : "/admin/users"}
+            role="tab"
+            aria-selected={accountType === f.value}
+            className={cn(
+              "rounded-full px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
+              accountType === f.value
+                ? "bg-primary/10 text-primary"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+            )}
+          >
+            {f.label}
+          </Link>
+        ))}
+      </div>
+
       <Card className="border-border/80">
         <CardContent className="p-0">
           <Table>

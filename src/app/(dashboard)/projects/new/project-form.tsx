@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import { AlertCircle } from "lucide-react";
 import {
   createProject,
+  updateProject,
   type ProjectFormState,
 } from "@/app/(dashboard)/projects/actions";
 import { BoundaryDrawer } from "@/components/map/boundary-drawer";
@@ -20,14 +21,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { Polygon } from "@/lib/queries/projects";
+import type { Project, Polygon } from "@/lib/queries/projects";
 
-export function ProjectForm() {
+export function ProjectForm({ project }: { project?: Project }) {
+  const isEdit = !!project;
+  const action = isEdit ? updateProject.bind(null, project.id) : createProject;
   const [state, formAction, pending] = useActionState<
     ProjectFormState,
     FormData
-  >(createProject, null);
-  const [boundary, setBoundary] = useState<Polygon | null>(null);
+  >(action, null);
+  const [boundary, setBoundary] = useState<Polygon | null>(project?.boundary ?? null);
 
   return (
     <form action={formAction} className="grid gap-6 lg:grid-cols-2">
@@ -38,16 +41,25 @@ export function ProjectForm() {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name">Project name</Label>
-            <Input id="name" name="name" required />
+            <Input id="name" name="name" defaultValue={project?.name} required />
           </div>
           <div className="space-y-2">
             <Label htmlFor="description">Description</Label>
-            <Textarea id="description" name="description" rows={3} />
+            <Textarea
+              id="description"
+              name="description"
+              rows={3}
+              defaultValue={project?.description}
+            />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="projectType">Project type</Label>
-              <Select name="projectType" defaultValue="restoration" required>
+              <Select
+                name="projectType"
+                defaultValue={project?.projectType ?? "restoration"}
+                required
+              >
                 <SelectTrigger id="projectType" className="w-full">
                   <SelectValue />
                 </SelectTrigger>
@@ -61,7 +73,7 @@ export function ProjectForm() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="status">Status</Label>
-              <Select name="status" defaultValue="planning" required>
+              <Select name="status" defaultValue={project?.status ?? "planning"} required>
                 <SelectTrigger id="status" className="w-full">
                   <SelectValue />
                 </SelectTrigger>
@@ -78,11 +90,21 @@ export function ProjectForm() {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="startDate">Start date</Label>
-              <Input id="startDate" name="startDate" type="date" />
+              <Input
+                id="startDate"
+                name="startDate"
+                type="date"
+                defaultValue={project?.startDate ?? undefined}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="endDate">End date</Label>
-              <Input id="endDate" name="endDate" type="date" />
+              <Input
+                id="endDate"
+                name="endDate"
+                type="date"
+                defaultValue={project?.endDate ?? undefined}
+              />
             </div>
           </div>
           <div className="space-y-2">
@@ -92,10 +114,16 @@ export function ProjectForm() {
               name="goals"
               rows={3}
               placeholder={"Restore 50 hectares of mangrove\nEstablish community monitoring team"}
+              defaultValue={project?.goals.join("\n")}
             />
           </div>
           <div className="flex items-start gap-2.5 rounded-lg border border-border bg-muted/40 p-3">
-            <Checkbox id="isPublic" name="isPublic" className="mt-0.5" />
+            <Checkbox
+              id="isPublic"
+              name="isPublic"
+              className="mt-0.5"
+              defaultChecked={project?.isPublic}
+            />
             <Label htmlFor="isPublic" className="font-normal text-muted-foreground">
               Show this project&apos;s boundary on Ecovireon&apos;s public map
             </Label>
@@ -110,7 +138,13 @@ export function ProjectForm() {
             </div>
           )}
           <Button type="submit" disabled={pending} size="lg" className="w-full sm:w-auto">
-            {pending ? "Creating..." : "Create project"}
+            {pending
+              ? isEdit
+                ? "Saving..."
+                : "Creating..."
+              : isEdit
+                ? "Save changes"
+                : "Create project"}
           </Button>
         </CardContent>
       </Card>
@@ -120,7 +154,7 @@ export function ProjectForm() {
           <CardTitle className="text-base">Site boundary</CardTitle>
         </CardHeader>
         <CardContent>
-          <BoundaryDrawer onChange={setBoundary} />
+          <BoundaryDrawer initialBoundary={project?.boundary} onChange={setBoundary} />
           <input
             type="hidden"
             name="boundary"

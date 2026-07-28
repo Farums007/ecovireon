@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getCurrentProfile } from "@/lib/queries/profile";
 import { logout } from "@/app/(auth)/actions";
+import { EditProfileDialog } from "@/app/(account)/account/edit-profile-dialog";
 import { Logo } from "@/components/brand/logo";
 import { DashboardNav } from "@/components/dashboard/dashboard-nav";
 import { Button } from "@/components/ui/button";
 import {
   Avatar,
   AvatarFallback,
+  AvatarImage,
 } from "@/components/ui/avatar";
 
 export const metadata: Metadata = {
@@ -17,6 +19,7 @@ export const metadata: Metadata = {
 const NAV_ITEMS: { href: string; label: string; roles: Array<"admin" | "field_staff" | "verifier"> }[] = [
   { href: "/projects", label: "Projects", roles: ["admin", "field_staff", "verifier"] },
   { href: "/map", label: "Map", roles: ["admin", "field_staff", "verifier"] },
+  { href: "/donate", label: "Donate", roles: ["admin", "field_staff", "verifier"] },
 ];
 
 export default async function DashboardLayout({
@@ -52,11 +55,27 @@ export default async function DashboardLayout({
               <p className="font-medium text-foreground">{profile.fullName || role}</p>
               <p className="text-muted-foreground">{profile.organizationName}</p>
             </div>
-            <Avatar className="size-8 border border-border">
-              <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">
-                {initials}
-              </AvatarFallback>
-            </Avatar>
+            <EditProfileDialog
+              fullName={profile.fullName}
+              country={profile.country}
+              avatarUrl={profile.avatarUrl}
+              showCountry={false}
+              initials={initials}
+              trigger={
+                <button
+                  type="button"
+                  aria-label="Edit profile"
+                  className="rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                >
+                  <Avatar className="size-8 border border-border">
+                    {profile.avatarUrl && <AvatarImage src={profile.avatarUrl} alt="" />}
+                    <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">
+                      {initials}
+                    </AvatarFallback>
+                  </Avatar>
+                </button>
+              }
+            />
             <form action={logout}>
               <Button type="submit" variant="ghost" size="sm">
                 Sign out

@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, FileText, PlusCircle, Users2 } from "lucide-react";
+import { ArrowLeft, FileText, Pencil, PlusCircle, Users2 } from "lucide-react";
 import {
   getProject,
   listProjectMembers,
@@ -11,6 +11,7 @@ import { getProjectMetrics } from "@/lib/queries/dashboard";
 import { getCurrentProfile } from "@/lib/queries/profile";
 import { ProjectBoundaryMap } from "@/components/map/project-boundary-map";
 import { MetricsDashboard } from "@/app/(dashboard)/projects/[id]/metrics-dashboard";
+import { DeleteProjectButton } from "@/app/(dashboard)/projects/[id]/delete-project-button";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -81,6 +82,22 @@ export default async function ProjectDetailPage({
               </Link>
             }
           />
+          {profile?.role === "admin" && (
+            <>
+              <Button
+                nativeButton={false}
+                variant="outline"
+                size="sm"
+                render={
+                  <Link href={`/projects/${id}/edit`}>
+                    <Pencil className="size-4" aria-hidden="true" />
+                    Edit
+                  </Link>
+                }
+              />
+              <DeleteProjectButton projectId={id} projectName={project.name} />
+            </>
+          )}
           {profile?.role !== "verifier" && (
             <Button
               nativeButton={false}

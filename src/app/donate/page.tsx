@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Award, Camera, MapPin } from "lucide-react";
+import Link from "next/link";
+import { ArrowLeft, Award, Camera, MapPin } from "lucide-react";
 import { listPublicProjects } from "@/lib/queries/projects";
 import { getCurrentProfile } from "@/lib/queries/profile";
 import { MarketingHeader } from "@/components/marketing/marketing-header";
@@ -27,6 +28,15 @@ export default async function DonatePage() {
     <div className="flex min-h-svh flex-col">
       <MarketingHeader />
       <main className="mx-auto w-full max-w-xl flex-1 px-4 py-14 sm:px-6 sm:py-16">
+        {profile && (
+          <Link
+            href={profile.accountType === "individual" ? "/account" : "/projects"}
+            className="mb-6 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <ArrowLeft className="size-4" aria-hidden="true" />
+            Back to your dashboard
+          </Link>
+        )}
         <div className="mb-8 text-center">
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
             Fund a tree, get a verified record

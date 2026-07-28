@@ -1,19 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { LayoutDashboard, Menu, Shield, X } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { logout } from "@/app/(auth)/actions";
 
 const NAV_LINKS = [
@@ -54,53 +46,85 @@ function AuthButtons({ mobile = false }: { mobile?: boolean }) {
   );
 }
 
+// Plain hand-rolled dropdown, not Base UI's Menu — that combination
+// (Menu + Portal + Positioner) was reliably crashing the whole tab on
+// open in production, with no JS error to catch or diagnose. This is
+// the only menu-style popup in the app; everything else uses Dialog,
+// which has no such issue. A simple controlled panel + click-outside is
+// plenty for four static links and can't hit whatever that was.
 function ProfileMenu({ profile }: { profile: HeaderProfile }) {
   const dashboardHref = profile.accountType === "individual" ? "/account" : "/projects";
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+
+    function handlePointerDown(event: PointerEvent) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    }
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setOpen(false);
+    }
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [open]);
+
+  const itemClassName =
+    "flex items-center gap-1.5 rounded-md px-1.5 py-1 text-sm outline-hidden select-none hover:bg-accent hover:text-accent-foreground";
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger
-        render={
-          <button
-            type="button"
-            className="flex items-center gap-2 rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-          >
-            <Avatar className="size-8 border border-border">
-              {profile.avatarUrl && <AvatarImage src={profile.avatarUrl} alt="" />}
-              <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">
-                {initialsOf(profile.fullName)}
-              </AvatarFallback>
-            </Avatar>
-          </button>
-        }
-      />
-      <DropdownMenuContent align="end" className="w-48">
-        <DropdownMenuLabel>{profile.fullName || "Your account"}</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          render={
-            <Link href={dashboardHref}>
-              <LayoutDashboard className="size-4" aria-hidden="true" />
-              Dashboard
+    <div ref={containerRef} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        className="flex items-center gap-2 rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+      >
+        <Avatar className="size-8 border border-border">
+          {profile.avatarUrl && <AvatarImage src={profile.avatarUrl} alt="" />}
+          <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">
+            {initialsOf(profile.fullName)}
+          </AvatarFallback>
+        </Avatar>
+      </button>
+
+      {open && (
+        <div
+          role="menu"
+          className="absolute right-0 z-50 mt-2 w-48 rounded-lg border border-border/80 bg-popover p-1 text-popover-foreground shadow-md"
+        >
+          <p className="truncate px-1.5 py-1 text-xs font-medium text-muted-foreground">
+            {profile.fullName || "Your account"}
+          </p>
+          <div className="my-1 h-px bg-border" />
+          <Link href={dashboardHref} role="menuitem" className={itemClassName} onClick={() => setOpen(false)}>
+            <LayoutDashboard className="size-4" aria-hidden="true" />
+            Dashboard
+          </Link>
+          {profile.isPlatformAdmin && (
+            <Link href="/admin" role="menuitem" className={itemClassName} onClick={() => setOpen(false)}>
+              <Shield className="size-4" aria-hidden="true" />
+              Admin dashboard
             </Link>
-          }
-        />
-        {profile.isPlatformAdmin && (
-          <DropdownMenuItem
-            render={
-              <Link href="/admin">
-                <Shield className="size-4" aria-hidden="true" />
-                Admin dashboard
-              </Link>
-            }
-          />
-        )}
-        <DropdownMenuSeparator />
-        <form action={logout}>
-          <DropdownMenuItem render={<button type="submit">Sign out</button>} />
-        </form>
-      </DropdownMenuContent>
-    </DropdownMenu>
+          )}
+          <div className="my-1 h-px bg-border" />
+          <form action={logout}>
+            <button type="submit" role="menuitem" className={`w-full ${itemClassName}`}>
+              Sign out
+            </button>
+          </form>
+        </div>
+      )}
+    </div>
   );
 }
 

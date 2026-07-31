@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { getCurrentProfile } from "@/lib/queries/profile";
 import { listPublicProjects } from "@/lib/queries/projects";
+import { listApprovedTrees } from "@/lib/queries/trees";
 import { MarketingHeader } from "@/components/marketing/marketing-header";
 import { MarketingFooter } from "@/components/marketing/marketing-footer";
 import { OrgMap } from "@/components/map/org-map";
@@ -114,7 +115,10 @@ export default async function Home() {
     redirect(profile.accountType === "individual" ? "/account" : "/projects");
   }
 
-  const publicProjects = await listPublicProjects();
+  const [publicProjects, approvedTrees] = await Promise.all([
+    listPublicProjects(),
+    listApprovedTrees(),
+  ]);
 
   return (
     <div className="flex min-h-svh flex-col">
@@ -336,7 +340,9 @@ export default async function Home() {
                   name: p.name,
                   boundary: p.boundary,
                 }))}
-                observations={[]}
+                observations={approvedTrees
+                  .filter((t) => t.location)
+                  .map((t) => ({ id: t.id, location: t.location! }))}
               />
             </div>
           </div>

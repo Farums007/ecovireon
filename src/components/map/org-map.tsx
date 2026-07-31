@@ -14,7 +14,7 @@ import { BaseMap } from "@/components/map/base-map";
 import type { Point, Polygon } from "@/lib/queries/projects";
 
 type ProjectSummary = { id: string; name: string; boundary: Polygon | null };
-type ObservationMarker = { id: string; projectId: string; location: Point };
+type ObservationMarker = { id: string; location: Point };
 
 export function OrgMap({
   projects,

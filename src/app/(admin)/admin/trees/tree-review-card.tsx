@@ -7,6 +7,7 @@ import { AlertCircle, MapPin, ShieldX } from "lucide-react";
 import {
   approveTreeAction,
   rejectTreeAction,
+  unflagTreeAction,
   type ModerationState,
 } from "@/app/(admin)/admin/trees/actions";
 import { getTreePhotoUrl } from "@/lib/storage-urls";
@@ -47,6 +48,10 @@ export function TreeReviewCard({
     ModerationState,
     FormData
   >(rejectTreeAction, null);
+  const [unflagState, unflagAction, unflagPending] = useActionState<
+    ModerationState,
+    FormData
+  >(unflagTreeAction, null);
   const [reason, setReason] = useState("");
 
   const approveSubmitted = useRef(false);
@@ -66,6 +71,15 @@ export function TreeReviewCard({
       rejectSubmitted.current = false;
     }
   }, [rejectPending, rejectState, tree.species]);
+
+  const unflagSubmitted = useRef(false);
+  useEffect(() => {
+    if (unflagPending) unflagSubmitted.current = true;
+    else if (unflagSubmitted.current && !unflagState?.error) {
+      toast.success(`${tree.species} unflagged`);
+      unflagSubmitted.current = false;
+    }
+  }, [unflagPending, unflagState, tree.species]);
 
   const actionable = tree.status === "pending" || tree.status === "flagged";
 
@@ -94,6 +108,28 @@ export function TreeReviewCard({
           {tree.ownerName} · {new Date(tree.observedAt).toLocaleDateString()}
           {tree.gpsAccuracyM ? ` · ±${Math.round(tree.gpsAccuracyM)}m` : ""}
         </p>
+
+        {tree.status === "flagged" && (
+          <>
+            <form action={unflagAction}>
+              <input type="hidden" name="treeId" value={tree.id} />
+              <Button
+                type="submit"
+                size="sm"
+                variant="outline"
+                className="w-full"
+                disabled={unflagPending}
+              >
+                {unflagPending ? "Unflagging..." : "Unflag (not fraud)"}
+              </Button>
+            </form>
+            {unflagState?.error && (
+              <p className="text-xs text-destructive" role="alert">
+                {unflagState.error}
+              </p>
+            )}
+          </>
+        )}
 
         {actionable && (
         <>

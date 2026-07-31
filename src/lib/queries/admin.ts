@@ -204,3 +204,39 @@ export async function listAllUsers(
     };
   });
 }
+
+export type AdminProject = {
+  id: string;
+  name: string;
+  organizationName: string;
+  status: string;
+  projectType: string;
+  isPublic: boolean;
+  createdAt: string;
+};
+
+// Platform-admin view across every org's projects, gated by the
+// "Platform admins can view all projects" RLS policy (0023) — a regular
+// org admin's own listProjects() stays org-scoped as before.
+export async function listAllProjectsForAdmin(): Promise<AdminProject[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("projects")
+    .select("id, name, status, project_type, is_public, created_at, organizations(name)")
+    .order("created_at", { ascending: false });
+
+  if (error) throw new Error(error.message);
+
+  return (data ?? []).map((row) => {
+    const org = Array.isArray(row.organizations) ? row.organizations[0] : row.organizations;
+    return {
+      id: row.id,
+      name: row.name,
+      organizationName: org?.name ?? "Unknown",
+      status: row.status,
+      projectType: row.project_type,
+      isPublic: row.is_public,
+      createdAt: row.created_at,
+    };
+  });
+}

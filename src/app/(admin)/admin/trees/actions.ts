@@ -21,6 +21,22 @@ export async function approveTreeAction(
   return null;
 }
 
+export async function unflagTreeAction(
+  _prevState: ModerationState,
+  formData: FormData
+): Promise<ModerationState> {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("unflag_tree", {
+    p_tree_id: String(formData.get("treeId")),
+  });
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/admin/trees");
+  revalidatePath("/admin");
+  return null;
+}
+
 export async function rejectTreeAction(
   _prevState: ModerationState,
   formData: FormData

@@ -3,7 +3,16 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, LogOut, Menu, TreePine, Users2, Wallet, X } from "lucide-react";
+import {
+  FolderKanban,
+  LayoutDashboard,
+  LogOut,
+  Menu,
+  TreePine,
+  Users2,
+  Wallet,
+  X,
+} from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -11,6 +20,7 @@ import { cn } from "@/lib/utils";
 const NAV_ITEMS = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
   { href: "/admin/trees", label: "Tree review", icon: TreePine },
+  { href: "/admin/projects", label: "Projects", icon: FolderKanban },
   { href: "/admin/donations", label: "Donations", icon: Wallet },
   { href: "/admin/users", label: "Users", icon: Users2 },
 ];

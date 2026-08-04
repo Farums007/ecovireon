@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Bell } from "lucide-react";
 import { getCurrentProfile } from "@/lib/queries/profile";
+import { listMyOrgMemberships } from "@/lib/queries/teams";
 import { EditProfileDialog } from "@/app/(account)/account/edit-profile-dialog";
 import { OrgSidebar } from "@/components/dashboard/org-sidebar";
 import { OrgProfileMenu } from "@/components/dashboard/org-profile-menu";
@@ -20,6 +21,9 @@ export default async function DashboardLayout({
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
   if (profile.accountType !== "organization") redirect("/account");
+
+  const memberships = await listMyOrgMemberships();
+  const otherMemberships = memberships.filter((m) => m.organizationId !== profile.organizationId);
 
   const role = profile.role ?? "field_staff";
   const initials = profile.fullName
@@ -76,7 +80,11 @@ export default async function DashboardLayout({
                   </button>
                 }
               />
-              <OrgProfileMenu fullName={profile.fullName} role={profile.role} />
+              <OrgProfileMenu
+                fullName={profile.fullName}
+                role={profile.role}
+                otherMemberships={otherMemberships}
+              />
             </div>
           </div>
         </header>

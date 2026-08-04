@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getCurrentProfile } from "@/lib/queries/profile";
-import { logout } from "@/app/(auth)/actions";
+import { listMyOrgMemberships } from "@/lib/queries/teams";
+import { AccountProfileMenu } from "@/components/account/account-profile-menu";
 import { Logo } from "@/components/brand/logo";
 import { DashboardNav } from "@/components/dashboard/dashboard-nav";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export const metadata: Metadata = {
@@ -27,6 +27,8 @@ export default async function AccountLayout({
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
 
+  const memberships = await listMyOrgMemberships();
+
   const initials = profile.fullName
     ? profile.fullName
         .split(" ")
@@ -45,19 +47,12 @@ export default async function AccountLayout({
             <DashboardNav items={NAV_ITEMS} />
           </div>
           <div className="flex items-center gap-3">
-            <p className="hidden text-sm font-medium text-foreground sm:block">
-              {profile.fullName || "You"}
-            </p>
             <Avatar className="size-8 border border-border">
               <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">
                 {initials}
               </AvatarFallback>
             </Avatar>
-            <form action={logout}>
-              <Button type="submit" variant="ghost" size="sm">
-                Sign out
-              </Button>
-            </form>
+            <AccountProfileMenu fullName={profile.fullName} memberships={memberships} />
           </div>
         </div>
       </header>

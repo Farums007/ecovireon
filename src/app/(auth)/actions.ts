@@ -116,6 +116,18 @@ export async function logout() {
   redirect("/login");
 }
 
+// Steps out of org context into a personal view without leaving the org —
+// organization_members keeps the membership, so switching back later still
+// works. Used by the "Switch to personal dashboard" option in the org
+// dashboard's profile menu.
+export async function switchToIndividualAction() {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("switch_to_individual");
+  if (error) throw new Error(error.message);
+
+  redirect("/account");
+}
+
 // Lands here after an invited user (no password yet) clicks their invite
 // email and /auth/callback exchanges the code for a session.
 export async function setPassword(

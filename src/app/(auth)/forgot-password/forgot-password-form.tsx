@@ -2,8 +2,11 @@
 
 import { useActionState } from "react";
 import Link from "next/link";
-import { CheckCircle2, AlertCircle } from "lucide-react";
-import { login, type AuthActionState } from "@/app/(auth)/actions";
+import { AlertCircle, CheckCircle2 } from "lucide-react";
+import {
+  requestPasswordReset,
+  type AuthActionState,
+} from "@/app/(auth)/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,40 +18,31 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export function LoginForm({
-  justSignedUp,
-  redirectTo,
-}: {
-  justSignedUp: boolean;
-  redirectTo?: string;
-}) {
+export function ForgotPasswordForm({ sent }: { sent: boolean }) {
   const [state, formAction, pending] = useActionState<
     AuthActionState,
     FormData
-  >(login, null);
+  >(requestPasswordReset, null);
 
   return (
     <Card className="shadow-lg shadow-black/5">
       <CardHeader>
-        <CardTitle className="text-xl">Sign in</CardTitle>
+        <CardTitle className="text-xl">Reset your password</CardTitle>
         <CardDescription>
-          Access your profile, projects, and restoration data.
+          Enter your email and we&apos;ll send you a link to set a new one.
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {justSignedUp && (
+        {sent && (
           <div
             role="status"
             className="mb-4 flex items-start gap-2 rounded-lg border border-primary/20 bg-primary/10 p-3 text-sm text-foreground"
           >
             <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden="true" />
-            <span>Account created. Check your email to confirm before signing in.</span>
+            <span>If an account exists for that email, a reset link is on its way.</span>
           </div>
         )}
         <form action={formAction} className="space-y-4" noValidate>
-          {redirectTo && (
-            <input type="hidden" name="redirectTo" value={redirectTo} />
-          )}
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
@@ -56,24 +50,6 @@ export function LoginForm({
               name="email"
               type="email"
               autoComplete="email"
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="password">Password</Label>
-              <Link
-                href="/forgot-password"
-                className="text-xs font-medium text-primary underline-offset-4 hover:underline"
-              >
-                Forgot password?
-              </Link>
-            </div>
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete="current-password"
               required
             />
           </div>
@@ -87,16 +63,15 @@ export function LoginForm({
             </div>
           )}
           <Button type="submit" className="w-full" size="lg" disabled={pending}>
-            {pending ? "Signing in..." : "Sign in"}
+            {pending ? "Sending..." : "Send reset link"}
           </Button>
         </form>
         <p className="mt-6 text-center text-sm text-muted-foreground">
-          No account?{" "}
           <Link
-            href="/signup"
+            href="/login"
             className="font-medium text-primary underline-offset-4 hover:underline"
           >
-            Create one
+            Back to sign in
           </Link>
         </p>
       </CardContent>

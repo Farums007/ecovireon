@@ -1,4 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
+import type { Currency } from "@/lib/currency";
+
+export type { Currency };
 
 export type ProjectStatus =
   | "planning"
@@ -83,6 +86,7 @@ export type Project = {
   region: string | null;
   fundingSource: string | null;
   budget: number | null;
+  currency: Currency;
   expectedOutcomes: string | null;
   publicSections: PublicSections;
   areaHa: number | null;
@@ -107,6 +111,7 @@ function mapRow(row: {
   region: string | null;
   funding_source: string | null;
   budget: number | string | null;
+  currency: Currency;
   expected_outcomes: string | null;
   public_sections: unknown;
   area_ha: number | string | null;
@@ -138,6 +143,7 @@ function mapRow(row: {
     region: row.region,
     fundingSource: row.funding_source,
     budget: row.budget === null ? null : Number(row.budget),
+    currency: row.currency,
     expectedOutcomes: row.expected_outcomes,
     publicSections:
       row.public_sections && typeof row.public_sections === "object"

@@ -8,6 +8,7 @@ import {
   type ProjectFormState,
 } from "@/app/(dashboard)/projects/actions";
 import { BoundaryDrawer } from "@/components/map/boundary-drawer";
+import { ManualCoordinatesInput } from "@/components/map/manual-coordinates-input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -22,6 +23,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { Project, Polygon } from "@/lib/queries/projects";
+import { CURRENCY_LABELS } from "@/lib/currency";
+import { cn } from "@/lib/utils";
 
 export function ProjectForm({ project }: { project?: Project }) {
   const isEdit = !!project;
@@ -31,6 +34,14 @@ export function ProjectForm({ project }: { project?: Project }) {
     FormData
   >(action, null);
   const [boundary, setBoundary] = useState<Polygon | null>(project?.boundary ?? null);
+  const [boundaryMode, setBoundaryMode] = useState<"draw" | "manual">("draw");
+  const [boundaryVersion, setBoundaryVersion] = useState(0);
+
+  function applyManualCoordinates(polygon: Polygon) {
+    setBoundary(polygon);
+    setBoundaryVersion((v) => v + 1);
+    setBoundaryMode("draw");
+  }
 
   return (
     <form action={formAction} className="grid gap-6 lg:grid-cols-2">
@@ -160,14 +171,28 @@ export function ProjectForm({ project }: { project?: Project }) {
             </div>
             <div className="space-y-2">
               <Label htmlFor="budget">Budget</Label>
-              <Input
-                id="budget"
-                name="budget"
-                type="number"
-                min="0"
-                step="any"
-                defaultValue={project?.budget ?? undefined}
-              />
+              <div className="flex gap-2">
+                <Select name="currency" defaultValue={project?.currency ?? "USD"}>
+                  <SelectTrigger id="currency" className="w-28 shrink-0">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(CURRENCY_LABELS).map(([code, label]) => (
+                      <SelectItem key={code} value={code}>
+                        {label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Input
+                  id="budget"
+                  name="budget"
+                  type="number"
+                  min="0"
+                  step="any"
+                  defaultValue={project?.budget ?? undefined}
+                />
+              </div>
             </div>
           </div>
           <div className="space-y-2">
@@ -215,8 +240,48 @@ export function ProjectForm({ project }: { project?: Project }) {
         <CardHeader>
           <CardTitle className="text-base">Site boundary</CardTitle>
         </CardHeader>
-        <CardContent>
-          <BoundaryDrawer initialBoundary={project?.boundary} onChange={setBoundary} />
+        <CardContent className="space-y-4">
+          <div className="flex gap-1.5" role="tablist" aria-label="Boundary input method">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={boundaryMode === "draw"}
+              onClick={() => setBoundaryMode("draw")}
+              className={cn(
+                "rounded-full px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
+                boundaryMode === "draw"
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              )}
+            >
+              Draw on map
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={boundaryMode === "manual"}
+              onClick={() => setBoundaryMode("manual")}
+              className={cn(
+                "rounded-full px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
+                boundaryMode === "manual"
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              )}
+            >
+              Enter coordinates manually
+            </button>
+          </div>
+
+          {boundaryMode === "draw" ? (
+            <BoundaryDrawer
+              key={boundaryVersion}
+              initialBoundary={boundary ?? project?.boundary}
+              onChange={setBoundary}
+            />
+          ) : (
+            <ManualCoordinatesInput onApply={applyManualCoordinates} />
+          )}
+
           <input
             type="hidden"
             name="boundary"

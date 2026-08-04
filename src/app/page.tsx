@@ -133,13 +133,15 @@ export default async function Home() {
               Nature-based restoration, verified
             </span>
             <h1 className="mx-auto mt-6 max-w-3xl text-4xl leading-tight font-bold tracking-tight text-balance sm:text-5xl lg:text-6xl">
-              Every tree planted deserves a verified record.
+              Nature-based restoration starts with trusted data.
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground text-balance">
-              Ecovireon is the shared home for restoration data — geotagged,
-              time-stamped, and verified from the field to the final report.
-              Built for organizations running restoration programs, and for
-              individuals who just want to plant a tree and know it counts.
+              Ecovireon centralizes restoration data across every stage of a
+              project—from planning and field operations to verification,
+              monitoring, impact reporting, and public transparency. Whether
+              you&apos;re managing a national restoration programme or
+              planting your first tree, your restoration work lives in one
+              trusted platform.
             </p>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Button

@@ -71,6 +71,45 @@ export async function signup(
   redirect("/login?confirmEmail=1");
 }
 
+// Always redirects the same way whether or not the email has an account —
+// disclosing that would let someone enumerate registered addresses.
+export async function requestPasswordReset(
+  _prevState: AuthActionState,
+  formData: FormData
+): Promise<AuthActionState> {
+  const email = String(formData.get("email") ?? "").trim();
+  if (!email) return { error: "Email is required." };
+
+  const supabase = await createClient();
+  await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/auth/callback?next=/reset-password`,
+  });
+
+  redirect("/forgot-password?sent=1");
+}
+
+// Lands here after /auth/callback verifies the recovery link's token_hash,
+// which already establishes a session — same mechanism as the email-change
+// confirmation flow.
+export async function completePasswordReset(
+  _prevState: AuthActionState,
+  formData: FormData
+): Promise<AuthActionState> {
+  const password = String(formData.get("password") ?? "");
+  if (password.length < 6) return { error: "Password must be at least 6 characters." };
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) return { error: error.message };
+
+  redirect("/");
+}
+
 export async function logout() {
   const supabase = await createClient();
   await supabase.auth.signOut();

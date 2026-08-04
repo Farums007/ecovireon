@@ -3,7 +3,13 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import type { Polygon, ProjectStatus, ProjectType, RestorationType } from "@/lib/queries/projects";
+import type {
+  Currency,
+  Polygon,
+  ProjectStatus,
+  ProjectType,
+  RestorationType,
+} from "@/lib/queries/projects";
 
 export type ProjectFormState = { error: string } | null;
 
@@ -46,6 +52,7 @@ export async function createProject(
     p_funding_source: String(formData.get("fundingSource") ?? "") || null,
     p_budget: formData.get("budget") ? Number(formData.get("budget")) : null,
     p_expected_outcomes: String(formData.get("expectedOutcomes") ?? "") || null,
+    p_currency: String(formData.get("currency") ?? "USD") as Currency,
   });
 
   if (error) {
@@ -80,6 +87,7 @@ export async function updateProject(
     p_funding_source: String(formData.get("fundingSource") ?? "") || null,
     p_budget: formData.get("budget") ? Number(formData.get("budget")) : null,
     p_expected_outcomes: String(formData.get("expectedOutcomes") ?? "") || null,
+    p_currency: String(formData.get("currency") ?? "USD") as Currency,
   });
 
   if (error) {

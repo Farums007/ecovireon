@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getProject } from "@/lib/queries/projects";
+import { CURRENCY_SYMBOLS } from "@/lib/currency";
 import { getCurrentProfile } from "@/lib/queries/profile";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -33,7 +34,9 @@ export default async function ProjectFundingPage({
           <div>
             <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">Budget</p>
             <p className="mt-0.5 text-foreground">
-              {project.budget !== null ? project.budget.toLocaleString() : "Not set"}
+              {project.budget !== null
+                ? `${CURRENCY_SYMBOLS[project.currency]}${project.budget.toLocaleString()}`
+                : "Not set"}
             </p>
           </div>
           <div>

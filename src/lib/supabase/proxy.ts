@@ -3,7 +3,23 @@ import { NextResponse, type NextRequest } from "next/server";
 
 // Ecovireon is a public marketing/donation/exploration site by default;
 // only these prefixes require a signed-in session.
-const PROTECTED_PREFIXES = ["/projects", "/map", "/account", "/admin"];
+const PROTECTED_PREFIXES = [
+  "/dashboard",
+  "/projects",
+  "/map",
+  "/field-operations",
+  "/gis",
+  "/restoration-assets",
+  "/verification",
+  "/monitoring",
+  "/impact",
+  "/reports",
+  "/teams",
+  "/activity",
+  "/settings",
+  "/account",
+  "/admin",
+];
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });

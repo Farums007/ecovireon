@@ -11,6 +11,48 @@ export type ProjectType =
   | "conservation"
   | "urban_forestry"
   | "carbon";
+export type RestorationType =
+  | "forest"
+  | "mangrove"
+  | "wetland"
+  | "grassland"
+  | "coral"
+  | "agroforestry"
+  | "biodiversity"
+  | "other";
+
+export const RESTORATION_TYPE_LABELS: Record<RestorationType, string> = {
+  forest: "Forest",
+  mangrove: "Mangrove",
+  wetland: "Wetland",
+  grassland: "Grassland",
+  coral: "Coral",
+  agroforestry: "Agroforestry",
+  biodiversity: "Biodiversity",
+  other: "Other",
+};
+
+// Asset label per restoration type, used wherever a verified observation
+// is presented as a "Restoration Asset" (project tab, org-wide gallery).
+export const RESTORATION_ASSET_LABELS: Record<RestorationType, string> = {
+  forest: "Tree",
+  mangrove: "Mangrove Stand",
+  wetland: "Monitoring Point",
+  grassland: "Plot",
+  coral: "Coral Colony",
+  agroforestry: "Plot",
+  biodiversity: "Observation Point",
+  other: "Restoration Asset",
+};
+
+export type PublicSections = {
+  overview: boolean;
+  map: boolean;
+  photos: boolean;
+  monitoring: boolean;
+  impact: boolean;
+  partners: boolean;
+};
 
 export type Polygon = {
   type: "Polygon";
@@ -36,6 +78,14 @@ export type Project = {
   createdAt: string;
   boundary: Polygon | null;
   isPublic: boolean;
+  restorationType: RestorationType;
+  country: string | null;
+  region: string | null;
+  fundingSource: string | null;
+  budget: number | null;
+  expectedOutcomes: string | null;
+  publicSections: PublicSections;
+  areaHa: number | null;
 };
 
 function mapRow(row: {
@@ -52,7 +102,23 @@ function mapRow(row: {
   created_at: string;
   boundary_geojson: Polygon | null;
   is_public: boolean;
+  restoration_type: RestorationType;
+  country: string | null;
+  region: string | null;
+  funding_source: string | null;
+  budget: number | string | null;
+  expected_outcomes: string | null;
+  public_sections: unknown;
+  area_ha: number | string | null;
 }): Project {
+  const defaultSections: PublicSections = {
+    overview: true,
+    map: true,
+    photos: true,
+    monitoring: true,
+    impact: true,
+    partners: true,
+  };
   return {
     id: row.id,
     organizationId: row.organization_id,
@@ -67,6 +133,17 @@ function mapRow(row: {
     createdAt: row.created_at,
     boundary: row.boundary_geojson,
     isPublic: row.is_public,
+    restorationType: row.restoration_type,
+    country: row.country,
+    region: row.region,
+    fundingSource: row.funding_source,
+    budget: row.budget === null ? null : Number(row.budget),
+    expectedOutcomes: row.expected_outcomes,
+    publicSections:
+      row.public_sections && typeof row.public_sections === "object"
+        ? { ...defaultSections, ...(row.public_sections as Partial<PublicSections>) }
+        : defaultSections,
+    areaHa: row.area_ha === null ? null : Number(row.area_ha),
   };
 }
 

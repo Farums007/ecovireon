@@ -74,89 +74,120 @@ export default async function PublicProjectPage({
         </div>
 
         <div className="mb-8 grid gap-6 lg:grid-cols-3">
-          <div className="lg:col-span-2">
-            <div className="h-80 w-full overflow-hidden rounded-xl border border-border shadow-sm">
-              <ProjectBoundaryMap boundary={project.boundary} observations={mappedObservations} />
+          {project.publicSections.map && (
+            <div className="lg:col-span-2">
+              <div className="h-80 w-full overflow-hidden rounded-xl border border-border shadow-sm">
+                <ProjectBoundaryMap boundary={project.boundary} observations={mappedObservations} />
+              </div>
             </div>
-          </div>
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm">About this project</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              {project.description && <p className="text-foreground/90">{project.description}</p>}
-              <p className="text-muted-foreground">
-                {project.startDate ?? "No start date"} — {project.endDate ?? "No end date"}
-              </p>
-              {project.goals.length > 0 && (
-                <ul className="list-inside list-disc space-y-1 text-muted-foreground">
-                  {project.goals.map((goal) => (
-                    <li key={goal}>{goal}</li>
-                  ))}
-                </ul>
-              )}
-            </CardContent>
-          </Card>
+          )}
+          {project.publicSections.overview && (
+            <Card className={project.publicSections.map ? "" : "lg:col-span-3"}>
+              <CardHeader>
+                <CardTitle className="text-sm">About this project</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm">
+                {project.description && <p className="text-foreground/90">{project.description}</p>}
+                <p className="text-muted-foreground">
+                  {project.startDate ?? "No start date"} — {project.endDate ?? "No end date"}
+                </p>
+                {project.goals.length > 0 && (
+                  <ul className="list-inside list-disc space-y-1 text-muted-foreground">
+                    {project.goals.map((goal) => (
+                      <li key={goal}>{goal}</li>
+                    ))}
+                  </ul>
+                )}
+              </CardContent>
+            </Card>
+          )}
         </div>
 
-        {metrics.observationCount > 0 && (
+        {project.publicSections.impact && (
+          <div className="mb-8 grid gap-4 sm:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm">Area under restoration</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-2xl font-bold text-foreground">
+                  {project.areaHa ? `${project.areaHa.toFixed(1)} ha` : "—"}
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm">Verified Restoration Assets</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-2xl font-bold text-foreground">
+                  {observations.filter((o) => o.verificationStatus === "verified").length}
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {project.publicSections.monitoring && metrics.observationCount > 0 && (
           <div className="mb-8 space-y-3">
             <h2 className="text-lg font-bold tracking-tight">Monitoring progress</h2>
             <MetricsDashboard cards={metrics.cards} series={metrics.series} />
           </div>
         )}
 
-        <div className="space-y-3">
-          <h2 className="text-lg font-bold tracking-tight">Field updates</h2>
-          {observations.length === 0 ? (
-            <Card className="border-dashed">
-              <CardContent className="py-8 text-center text-sm text-muted-foreground">
-                No field updates yet.
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {observations.map((observation) => (
-                <Card key={observation.id} className="border-border/80">
-                  <CardHeader>
-                    <CardTitle className="text-sm font-semibold">
-                      {new Date(observation.observedAt).toLocaleDateString()}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-2 text-sm">
-                    {Object.entries(observation.metrics).length > 0 && (
-                      <ul className="space-y-1 text-muted-foreground">
-                        {Object.entries(observation.metrics).map(([key, value]) => (
-                          <li key={key}>
-                            <span className="font-medium text-foreground">{key}:</span> {value}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                    {observation.notes && <p>{observation.notes}</p>}
-                    {observation.photoUrls.length > 0 && (
-                      <div className="flex flex-wrap gap-2">
-                        {observation.photoUrls.map((path) =>
-                          signedPhotoUrls[path] ? (
-                            <Image
-                              key={path}
-                              src={signedPhotoUrls[path]}
-                              alt="Field update photo"
-                              width={80}
-                              height={80}
-                              unoptimized
-                              className="h-20 w-20 rounded-md border border-border object-cover"
-                            />
-                          ) : null
-                        )}
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-        </div>
+        {project.publicSections.monitoring && (
+          <div className="space-y-3">
+            <h2 className="text-lg font-bold tracking-tight">Field updates</h2>
+            {observations.length === 0 ? (
+              <Card className="border-dashed">
+                <CardContent className="py-8 text-center text-sm text-muted-foreground">
+                  No field updates yet.
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {observations.map((observation) => (
+                  <Card key={observation.id} className="border-border/80">
+                    <CardHeader>
+                      <CardTitle className="text-sm font-semibold">
+                        {new Date(observation.observedAt).toLocaleDateString()}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-2 text-sm">
+                      {Object.entries(observation.metrics).length > 0 && (
+                        <ul className="space-y-1 text-muted-foreground">
+                          {Object.entries(observation.metrics).map(([key, value]) => (
+                            <li key={key}>
+                              <span className="font-medium text-foreground">{key}:</span> {value}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                      {observation.notes && <p>{observation.notes}</p>}
+                      {project.publicSections.photos && observation.photoUrls.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                          {observation.photoUrls.map((path) =>
+                            signedPhotoUrls[path] ? (
+                              <Image
+                                key={path}
+                                src={signedPhotoUrls[path]}
+                                alt="Field update photo"
+                                width={80}
+                                height={80}
+                                unoptimized
+                                className="h-20 w-20 rounded-md border border-border object-cover"
+                              />
+                            ) : null
+                          )}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </main>
       <MarketingFooter />
     </div>

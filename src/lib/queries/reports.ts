@@ -51,6 +51,19 @@ export async function listReports(projectId: string): Promise<Report[]> {
   return (data ?? []).map(mapRow);
 }
 
+export async function listOrgReports(projectIds: string[]): Promise<Report[]> {
+  if (projectIds.length === 0) return [];
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("reports")
+    .select("*")
+    .in("project_id", projectIds)
+    .order("generated_at", { ascending: false });
+
+  if (error) throw new Error(error.message);
+  return (data ?? []).map(mapRow);
+}
+
 export async function getSignedReportUrls(
   paths: string[]
 ): Promise<Record<string, string>> {

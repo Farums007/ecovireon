@@ -112,7 +112,7 @@ const WHY_IT_MATTERS = [
 export default async function Home() {
   const profile = await getCurrentProfile();
   if (profile) {
-    redirect(profile.accountType === "individual" ? "/account" : "/projects");
+    redirect(profile.accountType === "individual" ? "/account" : "/dashboard");
   }
 
   const [publicProjects, approvedTrees] = await Promise.all([

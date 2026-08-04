@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import type { Polygon, ProjectStatus, ProjectType } from "@/lib/queries/projects";
+import type { Polygon, ProjectStatus, ProjectType, RestorationType } from "@/lib/queries/projects";
 
 export type ProjectFormState = { error: string } | null;
 
@@ -40,6 +40,12 @@ export async function createProject(
     p_goals: parseGoals(String(formData.get("goals") ?? "")),
     p_boundary_geojson: parseBoundary(String(formData.get("boundary") ?? "")),
     p_is_public: formData.get("isPublic") === "on",
+    p_restoration_type: String(formData.get("restorationType") ?? "other") as RestorationType,
+    p_country: String(formData.get("country") ?? "") || null,
+    p_region: String(formData.get("region") ?? "") || null,
+    p_funding_source: String(formData.get("fundingSource") ?? "") || null,
+    p_budget: formData.get("budget") ? Number(formData.get("budget")) : null,
+    p_expected_outcomes: String(formData.get("expectedOutcomes") ?? "") || null,
   });
 
   if (error) {
@@ -68,6 +74,12 @@ export async function updateProject(
     p_goals: parseGoals(String(formData.get("goals") ?? "")),
     p_boundary_geojson: parseBoundary(String(formData.get("boundary") ?? "")),
     p_is_public: formData.get("isPublic") === "on",
+    p_restoration_type: String(formData.get("restorationType") ?? "other") as RestorationType,
+    p_country: String(formData.get("country") ?? "") || null,
+    p_region: String(formData.get("region") ?? "") || null,
+    p_funding_source: String(formData.get("fundingSource") ?? "") || null,
+    p_budget: formData.get("budget") ? Number(formData.get("budget")) : null,
+    p_expected_outcomes: String(formData.get("expectedOutcomes") ?? "") || null,
   });
 
   if (error) {

@@ -30,7 +30,7 @@ export default async function DonatePage() {
       <main className="mx-auto w-full max-w-xl flex-1 px-4 py-14 sm:px-6 sm:py-16">
         {profile && (
           <Link
-            href={profile.accountType === "individual" ? "/account" : "/projects"}
+            href={profile.accountType === "individual" ? "/account" : "/dashboard"}
             className="mb-6 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
             <ArrowLeft className="size-4" aria-hidden="true" />

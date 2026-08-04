@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { FolderPlus, Globe2, MapPinned } from "lucide-react";
-import { listProjects } from "@/lib/queries/projects";
+import { listProjects, RESTORATION_TYPE_LABELS } from "@/lib/queries/projects";
 import { getCurrentProfile } from "@/lib/queries/profile";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -86,7 +86,7 @@ export default async function ProjectsPage() {
                     </Badge>
                   </div>
                   <CardDescription className="flex items-center gap-1.5">
-                    {TYPE_LABELS[project.projectType]}
+                    {RESTORATION_TYPE_LABELS[project.restorationType]} · {TYPE_LABELS[project.projectType]}
                     {project.isPublic && (
                       <span className="inline-flex items-center gap-1 text-primary">
                         <Globe2 className="size-3.5" aria-hidden="true" />

@@ -10,7 +10,8 @@ import {
 } from "react-map-gl/maplibre";
 import { LngLatBounds } from "maplibre-gl";
 import Link from "next/link";
-import { BaseMap } from "@/components/map/base-map";
+import { BaseMap, type MapStyleVariant } from "@/components/map/base-map";
+import { MapStyleSwitcher } from "@/components/map/map-style-switcher";
 import type { Point, Polygon } from "@/lib/queries/projects";
 
 type ProjectSummary = { id: string; name: string; boundary: Polygon | null };
@@ -19,12 +20,15 @@ type ObservationMarker = { id: string; location: Point };
 export function OrgMap({
   projects,
   observations,
+  showStyleSwitcher = false,
 }: {
   projects: ProjectSummary[];
   observations: ObservationMarker[];
+  showStyleSwitcher?: boolean;
 }) {
   const mapRef = useRef<MapRef>(null);
   const [selected, setSelected] = useState<ProjectSummary | null>(null);
+  const [styleVariant, setStyleVariant] = useState<MapStyleVariant>("satellite");
 
   const boundaries = projects.filter(
     (p): p is ProjectSummary & { boundary: Polygon } => !!p.boundary
@@ -43,7 +47,11 @@ export function OrgMap({
   }, [boundaries, observations]);
 
   return (
-    <BaseMap ref={mapRef} onLoad={fitToAll}>
+    <div className="relative h-full w-full">
+      {showStyleSwitcher && (
+        <MapStyleSwitcher value={styleVariant} onChange={setStyleVariant} />
+      )}
+      <BaseMap ref={mapRef} styleVariant={styleVariant} onLoad={fitToAll}>
       {boundaries.map((project) => (
         <Source
           key={project.id}
@@ -104,6 +112,7 @@ export function OrgMap({
           </Link>
         </Popup>
       )}
-    </BaseMap>
+      </BaseMap>
+    </div>
   );
 }

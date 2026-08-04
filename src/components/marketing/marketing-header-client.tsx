@@ -53,7 +53,7 @@ function AuthButtons({ mobile = false }: { mobile?: boolean }) {
 // which has no such issue. A simple controlled panel + click-outside is
 // plenty for four static links and can't hit whatever that was.
 function ProfileMenu({ profile }: { profile: HeaderProfile }) {
-  const dashboardHref = profile.accountType === "individual" ? "/account" : "/projects";
+  const dashboardHref = profile.accountType === "individual" ? "/account" : "/dashboard";
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -192,7 +192,7 @@ export function MarketingHeaderClient({
                 <Button
                   nativeButton={false}
                   render={
-                    <Link href={profile.accountType === "individual" ? "/account" : "/projects"}>
+                    <Link href={profile.accountType === "individual" ? "/account" : "/dashboard"}>
                       Dashboard
                     </Link>
                   }

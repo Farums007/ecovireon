@@ -40,6 +40,28 @@ export function ProjectForm({ project }: { project?: Project }) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
+            <Label htmlFor="restorationType">Restoration type</Label>
+            <Select
+              name="restorationType"
+              defaultValue={project?.restorationType ?? "other"}
+              required
+            >
+              <SelectTrigger id="restorationType" className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="forest">Forest restoration</SelectItem>
+                <SelectItem value="mangrove">Mangrove restoration</SelectItem>
+                <SelectItem value="wetland">Wetland restoration</SelectItem>
+                <SelectItem value="grassland">Grassland restoration</SelectItem>
+                <SelectItem value="coral">Coral restoration</SelectItem>
+                <SelectItem value="agroforestry">Agroforestry</SelectItem>
+                <SelectItem value="biodiversity">Biodiversity restoration</SelectItem>
+                <SelectItem value="other">Other</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
             <Label htmlFor="name">Project name</Label>
             <Input id="name" name="name" defaultValue={project?.name} required />
           </div>
@@ -108,13 +130,53 @@ export function ProjectForm({ project }: { project?: Project }) {
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="goals">Goals (one per line)</Label>
+            <Label htmlFor="goals">Objectives (one per line)</Label>
             <Textarea
               id="goals"
               name="goals"
               rows={3}
               placeholder={"Restore 50 hectares of mangrove\nEstablish community monitoring team"}
               defaultValue={project?.goals.join("\n")}
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="country">Country</Label>
+              <Input id="country" name="country" defaultValue={project?.country ?? undefined} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="region">State / Region</Label>
+              <Input id="region" name="region" defaultValue={project?.region ?? undefined} />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="fundingSource">Funding source</Label>
+              <Input
+                id="fundingSource"
+                name="fundingSource"
+                defaultValue={project?.fundingSource ?? undefined}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="budget">Budget</Label>
+              <Input
+                id="budget"
+                name="budget"
+                type="number"
+                min="0"
+                step="any"
+                defaultValue={project?.budget ?? undefined}
+              />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="expectedOutcomes">Expected outcomes</Label>
+            <Textarea
+              id="expectedOutcomes"
+              name="expectedOutcomes"
+              rows={3}
+              defaultValue={project?.expectedOutcomes ?? undefined}
             />
           </div>
           <div className="flex items-start gap-2.5 rounded-lg border border-border bg-muted/40 p-3">

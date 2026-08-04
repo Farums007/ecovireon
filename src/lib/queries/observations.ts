@@ -1,6 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import type { Point } from "@/lib/queries/projects";
 
+export type VerificationStatus = "pending" | "verified" | "needs_review" | "rejected";
+
 export type FieldObservation = {
   id: string;
   projectId: string;
@@ -11,6 +13,10 @@ export type FieldObservation = {
   notes: string;
   photoUrls: string[];
   location: Point | null;
+  verificationStatus: VerificationStatus;
+  reviewedBy: string | null;
+  reviewedAt: string | null;
+  reviewComment: string | null;
 };
 
 function mapRow(row: {
@@ -23,6 +29,10 @@ function mapRow(row: {
   notes: string;
   photo_urls: string[];
   location_geojson: Point | null;
+  verification_status: VerificationStatus;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  review_comment: string | null;
 }): FieldObservation {
   return {
     id: row.id,
@@ -37,6 +47,10 @@ function mapRow(row: {
     notes: row.notes,
     photoUrls: row.photo_urls ?? [],
     location: row.location_geojson,
+    verificationStatus: row.verification_status,
+    reviewedBy: row.reviewed_by,
+    reviewedAt: row.reviewed_at,
+    reviewComment: row.review_comment,
   };
 }
 
@@ -48,6 +62,42 @@ export async function listObservations(
     .from("field_observations_geo")
     .select("*")
     .eq("project_id", projectId)
+    .order("observed_at", { ascending: false });
+
+  if (error) throw new Error(error.message);
+  return (data ?? []).map(mapRow);
+}
+
+export async function listObservationsByStatus(
+  projectId: string,
+  statuses: VerificationStatus[]
+): Promise<FieldObservation[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("field_observations_geo")
+    .select("*")
+    .eq("project_id", projectId)
+    .in("verification_status", statuses)
+    .order("observed_at", { ascending: false });
+
+  if (error) throw new Error(error.message);
+  return (data ?? []).map(mapRow);
+}
+
+// Org-wide roll-up (Verification queue, Restoration Assets gallery) —
+// takes the org's project ids since field_observations has no direct
+// organization_id column.
+export async function listOrgObservationsByStatus(
+  projectIds: string[],
+  statuses: VerificationStatus[]
+): Promise<FieldObservation[]> {
+  if (projectIds.length === 0) return [];
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("field_observations_geo")
+    .select("*")
+    .in("project_id", projectIds)
+    .in("verification_status", statuses)
     .order("observed_at", { ascending: false });
 
   if (error) throw new Error(error.message);

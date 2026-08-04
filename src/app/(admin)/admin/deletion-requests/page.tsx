@@ -125,7 +125,7 @@ export default async function AdminDeletionRequestsPage({
                     </TableCell>
                     {filter === "pending" && (
                       <TableCell>
-                        <RequestRowActions requestId={request.id} />
+                        <RequestRowActions request={request} />
                       </TableCell>
                     )}
                   </TableRow>

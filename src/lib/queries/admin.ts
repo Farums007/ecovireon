@@ -238,7 +238,7 @@ export async function listDeletionRequests(
   let query = supabase
     .from("deletion_requests")
     .select(
-      "id, type, organization_id, user_id, requested_by, reason, status, created_at, resolved_at"
+      "id, type, organization_id, user_id, requested_by, reason, status, created_at, resolved_at, target_name"
     )
     .order("created_at", { ascending: false });
   if (status) query = query.eq("status", status);
@@ -251,30 +251,39 @@ export async function listDeletionRequests(
     ...new Set(data.filter((r) => r.organization_id).map((r) => r.organization_id as string)),
   ];
   const profileIds = [
-    ...new Set([
-      ...data.filter((r) => r.user_id).map((r) => r.user_id as string),
-      ...data.map((r) => r.requested_by),
-    ]),
+    ...new Set(
+      [
+        ...data.filter((r) => r.user_id).map((r) => r.user_id as string),
+        ...data.map((r) => r.requested_by),
+      ].filter((id): id is string => id !== null)
+    ),
   ];
 
   const [{ data: orgs }, { data: profiles }] = await Promise.all([
     orgIds.length
       ? supabase.from("organizations").select("id, name").in("id", orgIds)
       : Promise.resolve({ data: [] as { id: string; name: string }[] }),
-    supabase.from("profiles").select("id, full_name").in("id", profileIds),
+    profileIds.length
+      ? supabase.from("profiles").select("id, full_name").in("id", profileIds)
+      : Promise.resolve({ data: [] as { id: string; full_name: string }[] }),
   ]);
 
   const orgNameById = new Map((orgs ?? []).map((o) => [o.id, o.name]));
   const nameById = new Map((profiles ?? []).map((p) => [p.id, p.full_name]));
 
+  // Once resolved, target_name is a snapshot taken at deletion time — the
+  // live join can no longer find the org/user by then (its FK was nulled
+  // by ON DELETE SET NULL when the row was removed), so prefer the
+  // snapshot whenever it's set.
   return data.map((row) => ({
     id: row.id,
     type: row.type,
     targetName:
-      row.type === "organization"
+      row.target_name ??
+      (row.type === "organization"
         ? (orgNameById.get(row.organization_id as string) ?? "Unknown organization")
-        : (nameById.get(row.user_id as string) ?? "Unknown user"),
-    requestedByName: nameById.get(row.requested_by) ?? "Unknown",
+        : (nameById.get(row.user_id as string) ?? "Unknown user")),
+    requestedByName: row.requested_by ? (nameById.get(row.requested_by) ?? "Unknown") : "—",
     reason: row.reason,
     status: row.status,
     createdAt: row.created_at,

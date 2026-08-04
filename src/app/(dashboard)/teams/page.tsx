@@ -70,9 +70,7 @@ export default async function TeamsPage() {
                   </TableCell>
                   {isAdmin && (
                     <TableCell>
-                      <div className="flex justify-end">
-                        <MemberRowActions member={member} />
-                      </div>
+                      <MemberRowActions member={member} currentUserId={profile.id} />
                     </TableCell>
                   )}
                 </TableRow>

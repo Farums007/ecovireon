@@ -10,3 +10,7 @@ export function getTreePhotoUrl(path: string): string {
 export function getAvatarUrl(path: string): string {
   return publicStorageUrl("avatars", path);
 }
+
+export function getOrgLogoUrl(path: string): string {
+  return publicStorageUrl("org-logos", path);
+}

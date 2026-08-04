@@ -54,6 +54,8 @@ export type CurrentProfile = {
   organizationId: string | null;
   organizationName: string | null;
   country: string | null;
+  region: string | null;
+  phone: string | null;
   isPlatformAdmin: boolean;
   treesPlantedCount: number;
   co2EstimatedKg: number;
@@ -73,7 +75,7 @@ export async function getCurrentProfile(): Promise<CurrentProfile | null> {
   const { data, error } = await supabase
     .from("profiles")
     .select(
-      "id, full_name, account_type, role, organization_id, country, is_platform_admin, trees_planted_count, co2_estimated_kg, donations_total_kobo, avatar_path, organizations(name)"
+      "id, full_name, account_type, role, organization_id, country, region, phone, is_platform_admin, trees_planted_count, co2_estimated_kg, donations_total_kobo, avatar_path, organizations(name)"
     )
     .eq("id", user.id)
     .single();
@@ -93,6 +95,8 @@ export async function getCurrentProfile(): Promise<CurrentProfile | null> {
     organizationId: data.organization_id,
     organizationName: organization?.name ?? null,
     country: data.country,
+    region: data.region,
+    phone: data.phone,
     isPlatformAdmin: data.is_platform_admin,
     treesPlantedCount: data.trees_planted_count,
     co2EstimatedKg: Number(data.co2_estimated_kg),

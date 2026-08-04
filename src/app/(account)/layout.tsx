@@ -16,6 +16,7 @@ const NAV_ITEMS = [
   { href: "/account/plant", label: "Plant a tree" },
   { href: "/explore", label: "Explore map" },
   { href: "/donate", label: "Donate" },
+  { href: "/account/settings", label: "Settings" },
 ];
 
 export default async function AccountLayout({

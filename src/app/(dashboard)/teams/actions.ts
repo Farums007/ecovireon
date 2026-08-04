@@ -37,18 +37,15 @@ export async function inviteOrgMemberAction(
     { p_email: email }
   );
   if (lookupError) return { error: lookupError.message };
-  if (existingId) {
-    return {
-      error: "This email already has an Ecovireon account, so it can't be invited to a new organization.",
-    };
-  }
 
-  // org_invites (0001) is only a marker the signup trigger checks — it
-  // doesn't send anything by itself. Insert it first, then actually
-  // send the invite email; the trigger resolves this row the moment the
-  // account is created (omitting account_type in the metadata below
-  // makes it fall into the "organization" branch, which checks this
-  // table — see handle_new_user in 0007).
+  // org_invites (0001) is only a marker — it doesn't send anything by
+  // itself. For a brand-new email, insert it then send the real invite
+  // email (the signup trigger resolves this row the moment the account is
+  // created — see handle_new_user in 0029). For an email that already has
+  // an account, inviteUserByEmail would fail outright (that API is only
+  // for creating new users), so just insert the row: the existing user
+  // will see it as a pending invite next time they open their account
+  // settings, and can accept it via accept_org_invite.
   const { error: inviteRowError } = await supabase.from("org_invites").insert({
     organization_id: check.profile.organizationId,
     email,
@@ -57,12 +54,14 @@ export async function inviteOrgMemberAction(
   });
   if (inviteRowError) return { error: inviteRowError.message };
 
-  const admin = createServiceRoleClient();
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
-  const { error: sendError } = await admin.auth.admin.inviteUserByEmail(email, {
-    redirectTo: `${siteUrl}/auth/callback?next=/auth/set-password`,
-  });
-  if (sendError) return { error: sendError.message };
+  if (!existingId) {
+    const admin = createServiceRoleClient();
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
+    const { error: sendError } = await admin.auth.admin.inviteUserByEmail(email, {
+      redirectTo: `${siteUrl}/auth/callback?next=/auth/set-password`,
+    });
+    if (sendError) return { error: sendError.message };
+  }
 
   revalidatePath("/teams");
   return null;
@@ -97,12 +96,28 @@ export async function updateMemberAction(
   if (!VALID_ROLES.includes(role as ProjectRole)) return { error: "Invalid role." };
 
   const supabase = await createClient();
-  const { error } = await supabase
-    .from("profiles")
-    .update({ role, title: title || null })
-    .eq("id", memberId)
-    .eq("organization_id", check.profile.organizationId);
+  const { error } = await supabase.rpc("update_org_member", {
+    p_user_id: memberId,
+    p_role: role,
+    p_title: title || null,
+  });
 
+  if (error) return { error: error.message };
+
+  revalidatePath("/teams");
+  return null;
+}
+
+export async function removeOrgMemberAction(
+  memberId: string,
+  _prevState: TeamActionState,
+  _formData: FormData
+): Promise<TeamActionState> {
+  const check = await requireOrgAdmin();
+  if (!check.ok) return { error: check.error };
+
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("remove_org_member", { p_user_id: memberId });
   if (error) return { error: error.message };
 
   revalidatePath("/teams");

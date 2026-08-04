@@ -9,6 +9,7 @@ export type AdminStats = {
   individualUsers: number;
   organizationCount: number;
   totalDonatedKobo: number;
+  pendingDeletionRequests: number;
 };
 
 export async function getAdminStats(): Promise<AdminStats> {
@@ -23,6 +24,7 @@ export async function getAdminStats(): Promise<AdminStats> {
     individualUsers,
     organizationCount,
     paidDonations,
+    pendingDeletionRequests,
   ] = await Promise.all([
     supabase.from("trees").select("*", { count: "exact", head: true }),
     supabase.from("trees").select("*", { count: "exact", head: true }).eq("status", "approved"),
@@ -32,6 +34,10 @@ export async function getAdminStats(): Promise<AdminStats> {
     supabase.from("profiles").select("*", { count: "exact", head: true }).eq("account_type", "individual"),
     supabase.from("organizations").select("*", { count: "exact", head: true }),
     supabase.from("donations").select("amount_kobo").eq("status", "paid"),
+    supabase
+      .from("deletion_requests")
+      .select("*", { count: "exact", head: true })
+      .eq("status", "pending"),
   ]);
 
   const totalDonatedKobo = (paidDonations.data ?? []).reduce(
@@ -48,6 +54,7 @@ export async function getAdminStats(): Promise<AdminStats> {
     individualUsers: individualUsers.count ?? 0,
     organizationCount: organizationCount.count ?? 0,
     totalDonatedKobo,
+    pendingDeletionRequests: pendingDeletionRequests.count ?? 0,
   };
 }
 
@@ -203,6 +210,76 @@ export async function listAllUsers(
       createdAt: row.created_at,
     };
   });
+}
+
+export type DeletionRequestStatus = "pending" | "completed" | "cancelled";
+
+export type AdminDeletionRequest = {
+  id: string;
+  type: "organization" | "individual";
+  targetName: string;
+  requestedByName: string;
+  reason: string | null;
+  status: DeletionRequestStatus;
+  createdAt: string;
+  resolvedAt: string | null;
+};
+
+// Platform-admin view across every deletion request, org or individual —
+// gated by the "Platform admins can view all deletion requests" RLS policy
+// (0031). deletion_requests has two separate FKs into profiles (user_id,
+// requested_by), which PostgREST can't embed unambiguously in one query,
+// so names are resolved with a follow-up batch lookup instead, same
+// pattern as listTreesForReview's owner-name lookup above.
+export async function listDeletionRequests(
+  status?: DeletionRequestStatus
+): Promise<AdminDeletionRequest[]> {
+  const supabase = await createClient();
+  let query = supabase
+    .from("deletion_requests")
+    .select(
+      "id, type, organization_id, user_id, requested_by, reason, status, created_at, resolved_at"
+    )
+    .order("created_at", { ascending: false });
+  if (status) query = query.eq("status", status);
+
+  const { data, error } = await query;
+  if (error) throw new Error(error.message);
+  if (!data || data.length === 0) return [];
+
+  const orgIds = [
+    ...new Set(data.filter((r) => r.organization_id).map((r) => r.organization_id as string)),
+  ];
+  const profileIds = [
+    ...new Set([
+      ...data.filter((r) => r.user_id).map((r) => r.user_id as string),
+      ...data.map((r) => r.requested_by),
+    ]),
+  ];
+
+  const [{ data: orgs }, { data: profiles }] = await Promise.all([
+    orgIds.length
+      ? supabase.from("organizations").select("id, name").in("id", orgIds)
+      : Promise.resolve({ data: [] as { id: string; name: string }[] }),
+    supabase.from("profiles").select("id, full_name").in("id", profileIds),
+  ]);
+
+  const orgNameById = new Map((orgs ?? []).map((o) => [o.id, o.name]));
+  const nameById = new Map((profiles ?? []).map((p) => [p.id, p.full_name]));
+
+  return data.map((row) => ({
+    id: row.id,
+    type: row.type,
+    targetName:
+      row.type === "organization"
+        ? (orgNameById.get(row.organization_id as string) ?? "Unknown organization")
+        : (nameById.get(row.user_id as string) ?? "Unknown user"),
+    requestedByName: nameById.get(row.requested_by) ?? "Unknown",
+    reason: row.reason,
+    status: row.status,
+    createdAt: row.created_at,
+    resolvedAt: row.resolved_at,
+  }));
 }
 
 export type AdminProject = {

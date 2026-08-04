@@ -8,6 +8,7 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
+  ShieldAlert,
   TreePine,
   Users2,
   Wallet,
@@ -23,6 +24,7 @@ const NAV_ITEMS = [
   { href: "/admin/projects", label: "Projects", icon: FolderKanban },
   { href: "/admin/donations", label: "Donations", icon: Wallet },
   { href: "/admin/users", label: "Users", icon: Users2 },
+  { href: "/admin/deletion-requests", label: "Deletion requests", icon: ShieldAlert },
 ];
 
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {

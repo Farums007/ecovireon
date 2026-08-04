@@ -4,6 +4,7 @@ import {
   Building2,
   CheckCircle2,
   Clock,
+  ShieldAlert,
   TreePine,
   Users2,
   UserRound,
@@ -61,6 +62,13 @@ export default async function AdminOverviewPage() {
       value: formatNaira(stats.totalDonatedKobo),
       icon: Wallet,
       href: "/admin/donations",
+    },
+    {
+      label: "Pending deletion requests",
+      value: stats.pendingDeletionRequests,
+      icon: ShieldAlert,
+      href: "/admin/deletion-requests",
+      attention: stats.pendingDeletionRequests > 0,
     },
   ];
 

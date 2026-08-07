@@ -4,9 +4,11 @@ import { redirect } from "next/navigation";
 import { Bell } from "lucide-react";
 import { getCurrentProfile } from "@/lib/queries/profile";
 import { listMyOrgMemberships } from "@/lib/queries/teams";
+import { listProjects } from "@/lib/queries/projects";
 import { EditProfileDialog } from "@/app/(account)/account/edit-profile-dialog";
 import { OrgSidebar } from "@/components/dashboard/org-sidebar";
 import { OrgProfileMenu } from "@/components/dashboard/org-profile-menu";
+import { MobileShell } from "@/components/dashboard/mobile-shell";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export const metadata: Metadata = {
@@ -20,9 +22,12 @@ export default async function DashboardLayout({
 }) {
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
-  if (profile.accountType !== "organization") redirect("/account");
+  if (profile.accountType !== "organization" || !profile.organizationId) redirect("/account");
 
-  const memberships = await listMyOrgMemberships();
+  const [memberships, projects] = await Promise.all([
+    listMyOrgMemberships(),
+    listProjects(profile.organizationId),
+  ]);
   const otherMemberships = memberships.filter((m) => m.organizationId !== profile.organizationId);
 
   const role = profile.role ?? "field_staff";
@@ -39,7 +44,16 @@ export default async function DashboardLayout({
     <div className="flex min-h-svh bg-muted/20">
       <OrgSidebar />
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="border-b border-border bg-background">
+        <MobileShell
+          organizationName={profile.organizationName ?? "Your organization"}
+          fullName={profile.fullName}
+          country={profile.country}
+          avatarUrl={profile.avatarUrl}
+          initials={initials}
+          otherMemberships={otherMemberships}
+          projects={projects.map((p) => ({ id: p.id, name: p.name }))}
+        />
+        <header className="hidden border-b border-border bg-background lg:block">
           <div className="flex items-center justify-between gap-4 px-4 py-3 sm:px-6">
             <div>
               <h1 className="text-lg font-bold tracking-tight text-foreground">
@@ -88,7 +102,7 @@ export default async function DashboardLayout({
             </div>
           </div>
         </header>
-        <main className="mx-auto w-full max-w-7xl flex-1 p-4 sm:p-6">{children}</main>
+        <main className="mx-auto w-full max-w-7xl flex-1 p-4 pb-24 sm:p-6 lg:pb-6">{children}</main>
       </div>
     </div>
   );

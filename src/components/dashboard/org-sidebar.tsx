@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -12,17 +11,15 @@ import {
   LineChart,
   Map,
   MapPin,
-  Menu,
   Settings,
   ShieldCheck,
   Sprout,
   Users2,
-  X,
 } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { cn } from "@/lib/utils";
 
-const NAV_ITEMS = [
+export const NAV_ITEMS = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/projects", label: "Restoration Projects", icon: Globe2 },
   { href: "/field-operations", label: "Field Operations", icon: MapPin },
@@ -37,14 +34,17 @@ const NAV_ITEMS = [
   { href: "/settings", label: "Settings", icon: Settings },
 ];
 
+export function isNavItemActive(pathname: string, href: string) {
+  return href === "/dashboard" ? pathname === "/dashboard" : pathname.startsWith(href);
+}
+
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
 
   return (
     <nav className="flex flex-1 flex-col gap-1 px-3">
       {NAV_ITEMS.map((item) => {
-        const active =
-          item.href === "/dashboard" ? pathname === "/dashboard" : pathname.startsWith(item.href);
+        const active = isNavItemActive(pathname, item.href);
         return (
           <Link
             key={item.href}
@@ -67,38 +67,16 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   );
 }
 
+// Desktop only — mobile has its own purpose-built header/bottom-nav/sheet
+// (MobileHeader, MobileBottomNav, MobileNavSheet), not a squeezed version
+// of this sidebar.
 export function OrgSidebar() {
-  const [open, setOpen] = useState(false);
-
   return (
-    <>
-      {/* Desktop sidebar */}
-      <aside className="hidden w-64 shrink-0 flex-col border-r border-border bg-background py-6 lg:flex">
-        <div className="mb-6 px-4">
-          <Logo variant="full" tone="green" height={24} href="/dashboard" />
-        </div>
-        <NavLinks />
-      </aside>
-
-      {/* Mobile top bar + drawer */}
-      <div className="flex items-center justify-between border-b border-border bg-background px-4 py-3 lg:hidden">
-        <Logo variant="full" tone="green" height={22} href="/dashboard" />
-        <button
-          type="button"
-          onClick={() => setOpen((v) => !v)}
-          aria-expanded={open}
-          aria-controls="org-mobile-nav"
-          aria-label={open ? "Close menu" : "Open menu"}
-          className="inline-flex h-10 w-10 items-center justify-center rounded-md text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-        >
-          {open ? <X className="size-5" /> : <Menu className="size-5" />}
-        </button>
+    <aside className="hidden w-64 shrink-0 flex-col border-r border-border bg-background py-6 lg:flex">
+      <div className="mb-6 px-4">
+        <Logo variant="full" tone="green" height={24} href="/dashboard" />
       </div>
-      {open && (
-        <nav id="org-mobile-nav" className="border-b border-border bg-background py-3 lg:hidden">
-          <NavLinks onNavigate={() => setOpen(false)} />
-        </nav>
-      )}
-    </>
+      <NavLinks />
+    </aside>
   );
 }

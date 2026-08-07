@@ -45,28 +45,30 @@ export default async function ProjectWorkspaceLayout({
         </Link>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">{project.name}</h1>
-          <p className="mt-1 text-muted-foreground">
-            {RESTORATION_TYPE_LABELS[project.restorationType]}
-            {project.country ? ` · ${project.country}` : ""}
-          </p>
+      <div className="sticky top-14 z-20 -mx-4 space-y-3 bg-background px-4 pt-1 pb-1 sm:-mx-6 sm:px-6 lg:static lg:top-auto lg:mx-0 lg:space-y-4 lg:bg-transparent lg:px-0 lg:pt-0">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">{project.name}</h1>
+            <p className="mt-1 text-muted-foreground">
+              {RESTORATION_TYPE_LABELS[project.restorationType]}
+              {project.country ? ` · ${project.country}` : ""}
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge className="capitalize">{project.status}</Badge>
+            {project.isPublic && (
+              <ShareButton
+                url={`${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/explore/projects/${id}`}
+                text={`See the progress on ${project.name}, a restoration project on Ecovireon.`}
+                label="Share"
+                size="sm"
+              />
+            )}
+          </div>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Badge className="capitalize">{project.status}</Badge>
-          {project.isPublic && (
-            <ShareButton
-              url={`${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/explore/projects/${id}`}
-              text={`See the progress on ${project.name}, a restoration project on Ecovireon.`}
-              label="Share"
-              size="sm"
-            />
-          )}
-        </div>
-      </div>
 
-      <ProjectTabs projectId={id} showSettings={isOwnerOrgAdmin} />
+        <ProjectTabs projectId={id} showSettings={isOwnerOrgAdmin} />
+      </div>
 
       {children}
     </div>

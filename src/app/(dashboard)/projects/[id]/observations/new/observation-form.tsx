@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useState } from "react";
-import { AlertCircle, MapPin, Save } from "lucide-react";
+import { AlertCircle, Camera, CheckCircle2, MapPin, Save, WifiOff } from "lucide-react";
 import {
   createObservation,
   type ObservationFormState,
@@ -33,7 +33,9 @@ export function ObservationForm({ projectId }: { projectId: string }) {
   });
   const [locating, setLocating] = useState(false);
   const [locationError, setLocationError] = useState<string | null>(null);
+  const [manualLocation, setManualLocation] = useState(false);
   const [savedAt, setSavedAt] = useState<Date | null>(null);
+  const [offlineError, setOfflineError] = useState(false);
 
   useEffect(() => {
     // Hydrating a text-field draft from localStorage after mount; a
@@ -83,10 +85,99 @@ export function ObservationForm({ projectId }: { projectId: string }) {
     );
   }
 
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    // No real offline queue yet — fail fast and clearly rather than
+    // letting the request hang or throw an unhandled network error.
+    if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      e.preventDefault();
+      setOfflineError(true);
+      return;
+    }
+    setOfflineError(false);
+  }
+
   return (
-    <Card className="max-w-xl">
+    <Card className="max-w-xl pb-28 lg:pb-6">
       <CardContent className="pt-6">
-        <form action={formAction} className="space-y-5">
+        <form action={formAction} onSubmit={handleSubmit} className="space-y-5">
+          <div className="space-y-2">
+            <Label>Location</Label>
+            <Button
+              type="button"
+              size="lg"
+              className="w-full"
+              onClick={useCurrentLocation}
+              disabled={locating}
+            >
+              <MapPin className="size-4.5" aria-hidden="true" />
+              {locating ? "Getting location..." : "Use my current location"}
+            </Button>
+            {draft.lat && draft.lng && (
+              <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                <CheckCircle2 className="size-4 shrink-0 text-primary" aria-hidden="true" />
+                {draft.lat}, {draft.lng}
+              </p>
+            )}
+            {locationError && (
+              <p className="text-sm text-destructive" role="alert">
+                {locationError}
+              </p>
+            )}
+            <button
+              type="button"
+              onClick={() => setManualLocation((v) => !v)}
+              className="text-xs font-medium text-muted-foreground underline-offset-4 hover:underline"
+            >
+              {manualLocation ? "Hide manual entry" : "Enter coordinates manually"}
+            </button>
+            {manualLocation && (
+              <div className="grid grid-cols-2 gap-2 pt-1">
+                <Input
+                  name="lat"
+                  type="number"
+                  step="any"
+                  placeholder="Latitude"
+                  value={draft.lat}
+                  onChange={(e) => setDraft((d) => ({ ...d, lat: e.target.value }))}
+                />
+                <Input
+                  name="lng"
+                  type="number"
+                  step="any"
+                  placeholder="Longitude"
+                  value={draft.lng}
+                  onChange={(e) => setDraft((d) => ({ ...d, lng: e.target.value }))}
+                />
+              </div>
+            )}
+            {!manualLocation && (
+              <>
+                <input type="hidden" name="lat" value={draft.lat} />
+                <input type="hidden" name="lng" value={draft.lng} />
+              </>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="photos">Photos</Label>
+            <label
+              htmlFor="photos"
+              className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed border-border py-6 text-sm font-medium text-muted-foreground transition-colors hover:border-primary/50 hover:text-foreground"
+            >
+              <Camera className="size-5" aria-hidden="true" />
+              Take or choose photos
+            </label>
+            <input
+              id="photos"
+              name="photos"
+              type="file"
+              accept="image/*"
+              multiple
+              capture="environment"
+              className="hidden"
+            />
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="observedAt">Observed at</Label>
             <Input
@@ -95,43 +186,6 @@ export function ObservationForm({ projectId }: { projectId: string }) {
               type="datetime-local"
               defaultValue={new Date().toISOString().slice(0, 16)}
             />
-          </div>
-
-          <div className="space-y-2">
-            <Label>Location</Label>
-            <div className="grid grid-cols-2 gap-2">
-              <Input
-                name="lat"
-                type="number"
-                step="any"
-                placeholder="Latitude"
-                value={draft.lat}
-                onChange={(e) => setDraft((d) => ({ ...d, lat: e.target.value }))}
-              />
-              <Input
-                name="lng"
-                type="number"
-                step="any"
-                placeholder="Longitude"
-                value={draft.lng}
-                onChange={(e) => setDraft((d) => ({ ...d, lng: e.target.value }))}
-              />
-            </div>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={useCurrentLocation}
-              disabled={locating}
-            >
-              <MapPin className="size-4" aria-hidden="true" />
-              {locating ? "Getting location..." : "Use my current location"}
-            </Button>
-            {locationError && (
-              <p className="text-sm text-destructive" role="alert">
-                {locationError}
-              </p>
-            )}
           </div>
 
           <div className="space-y-2">
@@ -157,11 +211,15 @@ export function ObservationForm({ projectId }: { projectId: string }) {
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="photos">Photos</Label>
-            <Input id="photos" name="photos" type="file" accept="image/*" multiple capture="environment" />
-          </div>
-
+          {offlineError && (
+            <div
+              role="alert"
+              className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive"
+            >
+              <WifiOff className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+              <span>You&apos;re offline — try again once you&apos;re back online. Your draft is saved on this device.</span>
+            </div>
+          )}
           {state?.error && (
             <div
               role="alert"
@@ -172,16 +230,18 @@ export function ObservationForm({ projectId }: { projectId: string }) {
             </div>
           )}
 
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <Button type="submit" disabled={pending}>
-              {pending ? "Submitting..." : "Submit observation"}
-            </Button>
-            {savedAt && (
-              <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-                <Save className="size-3.5" aria-hidden="true" />
-                Draft saved
-              </span>
-            )}
+          <div className="fixed inset-x-0 bottom-14 z-30 border-t border-border bg-background p-3 lg:static lg:z-auto lg:border-0 lg:bg-transparent lg:p-0">
+            <div className="mx-auto flex max-w-xl flex-wrap items-center justify-between gap-3">
+              <Button type="submit" size="lg" className="flex-1 lg:flex-none" disabled={pending}>
+                {pending ? "Submitting..." : "Submit observation"}
+              </Button>
+              {savedAt && (
+                <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Save className="size-3.5" aria-hidden="true" />
+                  Draft saved
+                </span>
+              )}
+            </div>
           </div>
         </form>
       </CardContent>

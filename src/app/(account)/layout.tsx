@@ -42,11 +42,11 @@ export default async function AccountLayout({
     <div className="flex min-h-svh flex-col bg-muted/20">
       <header className="border-b border-border bg-background">
         <div className="flex items-center justify-between gap-4 px-4 py-3 sm:px-6">
-          <div className="flex items-center gap-6">
-            <Logo variant="full" tone="green" height={24} href="/account" />
+          <div className="flex min-w-0 items-center gap-4 sm:gap-6">
+            <Logo variant="full" tone="green" height={24} href="/account" className="shrink-0" />
             <DashboardNav items={NAV_ITEMS} />
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex shrink-0 items-center gap-3">
             <Avatar className="size-8 border border-border">
               <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">
                 {initials}

@@ -33,7 +33,7 @@ export function ProjectTabs({
     <div
       role="tablist"
       aria-label="Project sections"
-      className="flex gap-1 overflow-x-auto border-b border-border"
+      className="flex snap-x snap-proximity gap-1 overflow-x-auto border-b border-border"
     >
       {tabs.map((tab) => {
         const active = tab.href === base ? pathname === base : pathname.startsWith(tab.href);
@@ -44,7 +44,7 @@ export function ProjectTabs({
             role="tab"
             aria-selected={active}
             className={cn(
-              "shrink-0 border-b-2 px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors",
+              "shrink-0 snap-start border-b-2 px-3 py-2.5 text-sm font-medium whitespace-nowrap transition-colors lg:py-2",
               active
                 ? "border-primary text-primary"
                 : "border-transparent text-muted-foreground hover:text-foreground"

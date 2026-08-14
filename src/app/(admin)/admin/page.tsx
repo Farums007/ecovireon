@@ -78,7 +78,7 @@ export default async function AdminOverviewPage() {
         <h1 className="text-2xl font-bold tracking-tight">Overview</h1>
         <p className="mt-1 text-muted-foreground">Platform-wide snapshot.</p>
       </div>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         {cards.map((card) => (
           <Link
             key={card.label}
@@ -90,23 +90,23 @@ export default async function AdminOverviewPage() {
                 card.attention ? "border-amber-300 bg-amber-50" : ""
               }`}
             >
-              <CardHeader className="flex-row items-center justify-between pb-2 space-y-0">
-                <CardTitle className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+              <CardHeader className="flex-row items-center justify-between gap-2 space-y-0 p-3 pb-1.5 sm:p-6 sm:pb-2">
+                <CardTitle className="text-[10px] leading-tight font-medium tracking-wide text-muted-foreground uppercase sm:text-xs">
                   {card.label}
                 </CardTitle>
                 <div
-                  className={`flex size-8 items-center justify-center rounded-full ${
+                  className={`flex size-6 shrink-0 items-center justify-center rounded-full sm:size-8 ${
                     card.attention ? "bg-amber-200/70" : "bg-primary/10"
                   }`}
                 >
                   <card.icon
-                    className={`size-4 ${card.attention ? "text-amber-700" : "text-primary"}`}
+                    className={`size-3.5 sm:size-4 ${card.attention ? "text-amber-700" : "text-primary"}`}
                     aria-hidden="true"
                   />
                 </div>
               </CardHeader>
-              <CardContent>
-                <p className="text-2xl font-bold text-foreground">{card.value}</p>
+              <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
+                <p className="text-lg font-bold text-foreground sm:text-2xl">{card.value}</p>
               </CardContent>
             </Card>
           </Link>

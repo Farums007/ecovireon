@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getCurrentProfile } from "@/lib/queries/profile";
 import { logout } from "@/app/(auth)/actions";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
+import { AdminMobileShell } from "@/components/admin/admin-mobile-shell";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
@@ -31,8 +32,9 @@ export default async function AdminLayout({
 
   return (
     <div className="flex min-h-svh bg-muted/20">
-      <AdminSidebar logoutAction={logout} />
+      <AdminSidebar />
       <div className="flex min-w-0 flex-1 flex-col">
+        <AdminMobileShell fullName={profile.fullName} initials={initials} logoutAction={logout} />
         <header className="hidden items-center justify-end gap-3 border-b border-border bg-background px-6 py-3 lg:flex">
           <div className="text-right text-sm leading-tight">
             <p className="font-medium text-foreground">{profile.fullName}</p>

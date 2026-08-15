@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getCurrentProfile } from "@/lib/queries/profile";
 import { listMyOrgMemberships } from "@/lib/queries/teams";
 import { AccountProfileMenu } from "@/components/account/account-profile-menu";
+import { InstallPrompt } from "@/components/install-prompt";
 import { Logo } from "@/components/brand/logo";
 import { DashboardNav } from "@/components/dashboard/dashboard-nav";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -40,6 +41,7 @@ export default async function AccountLayout({
 
   return (
     <div className="flex min-h-svh flex-col bg-muted/20">
+      <InstallPrompt />
       <header className="border-b border-border bg-background">
         <div className="flex items-center justify-between gap-4 px-4 py-3 sm:px-6">
           <div className="flex min-w-0 items-center gap-4 sm:gap-6">

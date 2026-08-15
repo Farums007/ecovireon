@@ -9,6 +9,7 @@ import { EditProfileDialog } from "@/app/(account)/account/edit-profile-dialog";
 import { OrgSidebar } from "@/components/dashboard/org-sidebar";
 import { OrgProfileMenu } from "@/components/dashboard/org-profile-menu";
 import { MobileShell } from "@/components/dashboard/mobile-shell";
+import { InstallPrompt } from "@/components/install-prompt";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export const metadata: Metadata = {
@@ -42,6 +43,7 @@ export default async function DashboardLayout({
 
   return (
     <div className="flex min-h-svh bg-muted/20">
+      <InstallPrompt />
       <OrgSidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <MobileShell

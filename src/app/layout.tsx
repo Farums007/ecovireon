@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Montserrat, Geist_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
@@ -22,6 +22,15 @@ export const metadata: Metadata = {
   },
   description:
     "Plan, manage, monitor, verify, and report nature-based projects.",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Ecovireon",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#16a02d",
 };
 
 export default function RootLayout({

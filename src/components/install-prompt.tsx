@@ -97,7 +97,7 @@ export function InstallPrompt() {
             type="button"
             onClick={dismissForNow}
             aria-label="Close"
-            className="shrink-0 rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+            className="shrink-0 rounded-md p-1 text-muted-foreground transition-all hover:bg-muted hover:text-foreground active:translate-y-px"
           >
             <X className="size-5" aria-hidden="true" />
           </button>

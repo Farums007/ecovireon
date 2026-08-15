@@ -45,7 +45,7 @@ export function AccountProfileMenu({
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="menu"
         aria-expanded={open}
-        className="flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-left text-sm hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        className="flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-left text-sm transition-all hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:translate-y-px"
       >
         <span className="hidden font-medium text-foreground sm:block">{fullName || "You"}</span>
         <ChevronDown className="size-4 text-muted-foreground" aria-hidden="true" />
@@ -69,7 +69,7 @@ export function AccountProfileMenu({
                   <button
                     type="submit"
                     role="menuitem"
-                    className="flex w-full items-center gap-1.5 rounded-md px-1.5 py-1 text-sm outline-hidden select-none hover:bg-accent hover:text-accent-foreground"
+                    className="flex w-full items-center gap-1.5 rounded-md px-1.5 py-1 text-sm outline-hidden select-none transition-all hover:bg-accent hover:text-accent-foreground active:translate-y-px"
                   >
                     <Building2 className="size-4 shrink-0" aria-hidden="true" />
                     <span className="truncate">{membership.organizationName}</span>
@@ -83,7 +83,7 @@ export function AccountProfileMenu({
             <button
               type="submit"
               role="menuitem"
-              className="flex w-full items-center gap-1.5 rounded-md px-1.5 py-1 text-sm outline-hidden select-none hover:bg-accent hover:text-accent-foreground"
+              className="flex w-full items-center gap-1.5 rounded-md px-1.5 py-1 text-sm outline-hidden select-none transition-all hover:bg-accent hover:text-accent-foreground active:translate-y-px"
             >
               <LogOut className="size-4" aria-hidden="true" />
               Sign out

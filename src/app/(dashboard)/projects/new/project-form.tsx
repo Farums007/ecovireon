@@ -248,7 +248,7 @@ export function ProjectForm({ project }: { project?: Project }) {
               aria-selected={boundaryMode === "draw"}
               onClick={() => setBoundaryMode("draw")}
               className={cn(
-                "rounded-full px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
+                "rounded-full px-3 py-1.5 text-sm font-medium transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:translate-y-px",
                 boundaryMode === "draw"
                   ? "bg-primary/10 text-primary"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -262,7 +262,7 @@ export function ProjectForm({ project }: { project?: Project }) {
               aria-selected={boundaryMode === "manual"}
               onClick={() => setBoundaryMode("manual")}
               className={cn(
-                "rounded-full px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
+                "rounded-full px-3 py-1.5 text-sm font-medium transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:translate-y-px",
                 boundaryMode === "manual"
                   ? "bg-primary/10 text-primary"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground"

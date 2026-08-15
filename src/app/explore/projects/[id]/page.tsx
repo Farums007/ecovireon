@@ -59,7 +59,7 @@ export default async function PublicProjectPage({
       <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-10 sm:px-6 sm:py-14">
         <Link
           href="/explore"
-          className="mb-6 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          className="mb-6 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-all hover:text-foreground active:translate-y-px"
         >
           <ArrowLeft className="size-4" aria-hidden="true" />
           Back to the map

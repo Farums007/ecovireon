@@ -61,7 +61,7 @@ export function MobileSheet({
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="inline-flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            className="inline-flex size-8 items-center justify-center rounded-md text-muted-foreground transition-all hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:translate-y-px"
           >
             <X className="size-4.5" aria-hidden="true" />
           </button>

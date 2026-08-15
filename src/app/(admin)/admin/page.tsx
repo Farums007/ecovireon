@@ -86,7 +86,7 @@ export default async function AdminOverviewPage() {
             className="rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
           >
             <Card
-              className={`h-full border-border/80 transition-all hover:-translate-y-0.5 hover:shadow-md ${
+              className={`h-full border-border/80 transition-all hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:shadow-none ${
                 card.attention ? "border-amber-300 bg-amber-50" : ""
               }`}
             >

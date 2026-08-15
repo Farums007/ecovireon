@@ -19,22 +19,22 @@ export function MarketingFooter() {
             <p className="text-sm font-semibold text-foreground">Platform</p>
             <ul className="mt-3 space-y-2.5 text-sm text-muted-foreground">
               <li>
-                <Link href="/explore" className="transition-colors hover:text-primary">
+                <Link href="/explore" className="inline-block transition-all hover:text-primary active:translate-y-px">
                   Explore the map
                 </Link>
               </li>
               <li>
-                <Link href="/donate" className="transition-colors hover:text-primary">
+                <Link href="/donate" className="inline-block transition-all hover:text-primary active:translate-y-px">
                   Donate
                 </Link>
               </li>
               <li>
-                <Link href="/signup" className="transition-colors hover:text-primary">
+                <Link href="/signup" className="inline-block transition-all hover:text-primary active:translate-y-px">
                   Sign up
                 </Link>
               </li>
               <li>
-                <Link href="/login" className="transition-colors hover:text-primary">
+                <Link href="/login" className="inline-block transition-all hover:text-primary active:translate-y-px">
                   Sign in
                 </Link>
               </li>
@@ -46,7 +46,7 @@ export function MarketingFooter() {
               <li>
                 <a
                   href="mailto:info@ecovireon.com"
-                  className="inline-flex items-center gap-1.5 transition-colors hover:text-primary"
+                  className="inline-flex items-center gap-1.5 transition-all hover:text-primary active:translate-y-px"
                 >
                   <Mail className="size-3.5" aria-hidden="true" />
                   info@ecovireon.com
@@ -55,7 +55,7 @@ export function MarketingFooter() {
               <li>
                 <a
                   href="mailto:help@ecovireon.com"
-                  className="inline-flex items-center gap-1.5 transition-colors hover:text-primary"
+                  className="inline-flex items-center gap-1.5 transition-all hover:text-primary active:translate-y-px"
                 >
                   <Mail className="size-3.5" aria-hidden="true" />
                   help@ecovireon.com

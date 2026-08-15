@@ -50,7 +50,7 @@ export default async function MonitoringPage() {
                 href={`/projects/${project.id}/monitoring`}
                 className="rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
               >
-                <Card className="h-full border-border/80 transition-all hover:-translate-y-0.5 hover:shadow-md">
+                <Card className="h-full border-border/80 transition-all hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:shadow-none">
                   <CardHeader>
                     <CardTitle className="text-sm font-semibold">{project.name}</CardTitle>
                     <p className="text-xs text-muted-foreground">

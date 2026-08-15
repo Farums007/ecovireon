@@ -144,7 +144,7 @@ export default async function PublicProfilePage({
                   href={`/trees/${tree.id}`}
                   className="rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                 >
-                  <Card className="h-full overflow-hidden border-border/80 transition-all hover:-translate-y-0.5 hover:shadow-md">
+                  <Card className="h-full overflow-hidden border-border/80 transition-all hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:shadow-none">
                     <div className="relative h-32 w-full">
                       <Image
                         src={getTreePhotoUrl(tree.photoPath)}

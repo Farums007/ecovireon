@@ -78,7 +78,7 @@ function ProfileMenu({ profile }: { profile: HeaderProfile }) {
   }, [open]);
 
   const itemClassName =
-    "flex items-center gap-1.5 rounded-md px-1.5 py-1 text-sm outline-hidden select-none hover:bg-accent hover:text-accent-foreground";
+    "flex items-center gap-1.5 rounded-md px-1.5 py-1 text-sm outline-hidden select-none transition-all hover:bg-accent hover:text-accent-foreground active:translate-y-px";
 
   return (
     <div ref={containerRef} className="relative">
@@ -87,7 +87,7 @@ function ProfileMenu({ profile }: { profile: HeaderProfile }) {
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="menu"
         aria-expanded={open}
-        className="flex items-center gap-2 rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        className="flex items-center gap-2 rounded-full transition-transform focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:translate-y-px"
       >
         <Avatar className="size-8 border border-border">
           {profile.avatarUrl && <AvatarImage src={profile.avatarUrl} alt="" />}
@@ -145,7 +145,7 @@ export function MarketingHeaderClient({
             <Link
               key={link.href}
               href={link.href}
-              className="rounded-sm transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+              className="rounded-sm transition-all hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary active:translate-y-px"
             >
               {link.label}
             </Link>
@@ -162,7 +162,7 @@ export function MarketingHeaderClient({
           aria-expanded={open}
           aria-controls="mobile-nav"
           aria-label={open ? "Close menu" : "Open menu"}
-          className="inline-flex h-10 w-10 items-center justify-center rounded-md text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary lg:hidden"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-md text-foreground transition-transform focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:translate-y-px lg:hidden"
         >
           {open ? <X className="size-5" /> : <Menu className="size-5" />}
         </button>
@@ -179,7 +179,7 @@ export function MarketingHeaderClient({
                 <Link
                   href={link.href}
                   onClick={() => setOpen(false)}
-                  className="block rounded-md px-3 py-2.5 text-base font-medium text-foreground/80 hover:bg-muted hover:text-foreground"
+                  className="block rounded-md px-3 py-2.5 text-base font-medium text-foreground/80 transition-all hover:bg-muted hover:text-foreground active:translate-y-px"
                 >
                   {link.label}
                 </Link>

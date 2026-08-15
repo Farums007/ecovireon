@@ -44,7 +44,7 @@ export function ProjectTabs({
             role="tab"
             aria-selected={active}
             className={cn(
-              "shrink-0 snap-start border-b-2 px-3 py-2.5 text-sm font-medium whitespace-nowrap transition-colors lg:py-2",
+              "shrink-0 snap-start border-b-2 px-3 py-2.5 text-sm font-medium whitespace-nowrap transition-all active:translate-y-px lg:py-2",
               active
                 ? "border-primary text-primary"
                 : "border-transparent text-muted-foreground hover:text-foreground"

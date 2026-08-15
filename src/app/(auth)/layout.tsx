@@ -15,7 +15,7 @@ export default function AuthLayout({
       />
       <Link
         href="/"
-        className="relative mb-8 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+        className="relative mb-8 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-all hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary active:translate-y-px"
       >
         <ArrowLeft className="size-4" aria-hidden="true" />
         Back to home

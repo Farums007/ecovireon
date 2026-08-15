@@ -115,7 +115,7 @@ export default async function OrgDashboardPage() {
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold text-foreground">Restoration projects</h2>
-            <Link href="/projects" className="text-xs font-medium text-primary">
+            <Link href="/projects" className="text-xs font-medium text-primary transition-all active:translate-y-px">
               View All Projects
             </Link>
           </div>
@@ -131,7 +131,7 @@ export default async function OrgDashboardPage() {
                 const lastUpdated = lastActivityByProject.get(project.id) ?? project.createdAt;
                 return (
                   <Link key={project.id} href={`/projects/${project.id}`}>
-                    <Card className="border-border/80 active:bg-muted/60">
+                    <Card className="border-border/80 transition-all active:translate-y-px active:bg-muted/60">
                       <CardContent className="space-y-1 p-3">
                         <div className="flex items-center justify-between gap-2">
                           <p className="truncate text-sm font-semibold text-foreground">
@@ -169,7 +169,7 @@ export default async function OrgDashboardPage() {
                 <Link
                   key={task.id}
                   href={task.href}
-                  className="block rounded-md px-2 py-2 text-sm text-foreground/90 active:bg-muted"
+                  className="block rounded-md px-2 py-2 text-sm text-foreground/90 transition-all active:translate-y-px active:bg-muted"
                 >
                   {task.label}
                 </Link>
@@ -181,7 +181,7 @@ export default async function OrgDashboardPage() {
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold text-foreground">Recent activity</h2>
-            <Link href="/activity" className="text-xs font-medium text-primary">
+            <Link href="/activity" className="text-xs font-medium text-primary transition-all active:translate-y-px">
               View Activity
             </Link>
           </div>
@@ -191,7 +191,11 @@ export default async function OrgDashboardPage() {
                 <p className="text-sm text-muted-foreground">No activity yet.</p>
               ) : (
                 activity.slice(0, 5).map((event) => (
-                  <Link key={event.id} href={event.href} className="block text-sm">
+                  <Link
+                    key={event.id}
+                    href={event.href}
+                    className="block rounded-md text-sm transition-all active:translate-y-px"
+                  >
                     <span className="block text-foreground/90">{event.label}</span>
                     <span className="block text-xs text-muted-foreground">
                       {relativeTime(event.timestamp)}
@@ -270,7 +274,7 @@ export default async function OrgDashboardPage() {
                     <Link
                       key={task.id}
                       href={task.href}
-                      className="block rounded-md px-2 py-1.5 text-sm text-foreground/90 transition-colors hover:bg-muted"
+                      className="block rounded-md px-2 py-1.5 text-sm text-foreground/90 transition-all hover:bg-muted active:translate-y-px"
                     >
                       {task.label}
                     </Link>
@@ -291,7 +295,7 @@ export default async function OrgDashboardPage() {
                     <Link
                       key={event.id}
                       href={event.href}
-                      className="block text-sm text-foreground/90 transition-colors hover:text-primary"
+                      className="block text-sm text-foreground/90 transition-all hover:text-primary active:translate-y-px"
                     >
                       <span className="block">{event.label}</span>
                       <span className="block text-xs text-muted-foreground">

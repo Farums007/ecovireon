@@ -21,7 +21,7 @@ export function DashboardNav({
             href={item.href}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "shrink-0 rounded-md px-3 py-1.5 font-medium whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
+              "shrink-0 rounded-md px-3 py-1.5 font-medium whitespace-nowrap transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:translate-y-px",
               active
                 ? "bg-primary/10 text-primary"
                 : "text-muted-foreground hover:bg-muted hover:text-foreground"

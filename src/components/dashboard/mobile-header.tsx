@@ -28,7 +28,7 @@ export function MobileHeader({
         onClick={onOpenMenu}
         aria-label="Open menu"
         aria-haspopup="dialog"
-        className="inline-flex size-9 shrink-0 items-center justify-center rounded-md text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        className="inline-flex size-9 shrink-0 items-center justify-center rounded-md text-foreground transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:translate-y-px"
       >
         <Menu className="size-5" aria-hidden="true" />
       </button>
@@ -39,7 +39,7 @@ export function MobileHeader({
       <Link
         href="/activity"
         aria-label="Activity"
-        className="inline-flex size-9 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        className="inline-flex size-9 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-all hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:translate-y-px"
       >
         <Bell className="size-4.5" aria-hidden="true" />
       </Link>
@@ -53,7 +53,7 @@ export function MobileHeader({
           <button
             type="button"
             aria-label="Edit profile"
-            className="shrink-0 rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            className="shrink-0 rounded-full transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:translate-y-px"
           >
             <Avatar className="size-8 border border-border">
               {avatarUrl && <AvatarImage src={avatarUrl} alt="" />}

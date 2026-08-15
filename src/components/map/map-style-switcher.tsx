@@ -30,7 +30,7 @@ export function MapStyleSwitcher({
           aria-selected={value === option.value}
           onClick={() => onChange(option.value)}
           className={cn(
-            "rounded-md px-2.5 py-1 text-xs font-medium transition-colors",
+            "rounded-md px-2.5 py-1 text-xs font-medium transition-all active:translate-y-px",
             value === option.value
               ? "bg-primary/10 text-primary"
               : "text-muted-foreground hover:bg-muted hover:text-foreground"

@@ -29,7 +29,7 @@ export function MobileBottomNav({ onOpenMenu }: { onOpenMenu: () => void }) {
             href={tab.href}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "flex flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium transition-colors",
+              "flex flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium transition-all active:translate-y-px",
               active ? "text-primary" : "text-muted-foreground"
             )}
           >
@@ -41,7 +41,7 @@ export function MobileBottomNav({ onOpenMenu }: { onOpenMenu: () => void }) {
       <button
         type="button"
         onClick={onOpenMenu}
-        className="flex flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium text-muted-foreground"
+        className="flex flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium text-muted-foreground transition-transform active:translate-y-px"
       >
         <Menu className="size-5.5" aria-hidden="true" />
         Menu

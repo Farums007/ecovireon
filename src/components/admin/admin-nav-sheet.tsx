@@ -32,7 +32,7 @@ export function AdminNavSheet({
               onClick={onClose}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-3 text-base font-medium transition-colors",
+                "flex items-center gap-3 rounded-lg px-3 py-3 text-base font-medium transition-all active:translate-y-px",
                 active ? "bg-primary/10 text-primary" : "text-foreground hover:bg-muted"
               )}
             >
@@ -47,7 +47,7 @@ export function AdminNavSheet({
         <form action={logoutAction}>
           <button
             type="submit"
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-base font-medium text-destructive hover:bg-destructive/10"
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-base font-medium text-destructive transition-all hover:bg-destructive/10 active:translate-y-px"
           >
             <LogOut className="size-5 shrink-0" aria-hidden="true" />
             Sign out

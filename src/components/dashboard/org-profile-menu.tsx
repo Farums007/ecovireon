@@ -55,7 +55,7 @@ export function OrgProfileMenu({
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="menu"
         aria-expanded={open}
-        className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-left text-sm hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-left text-sm transition-all hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:translate-y-px"
       >
         <span className="hidden leading-tight sm:block">
           <span className="block font-medium text-foreground">{fullName || "You"}</span>
@@ -80,7 +80,7 @@ export function OrgProfileMenu({
               <button
                 type="submit"
                 role="menuitem"
-                className="flex w-full items-center gap-1.5 rounded-md px-1.5 py-1 text-sm outline-hidden select-none hover:bg-accent hover:text-accent-foreground"
+                className="flex w-full items-center gap-1.5 rounded-md px-1.5 py-1 text-sm outline-hidden select-none transition-all hover:bg-accent hover:text-accent-foreground active:translate-y-px"
               >
                 <Building2 className="size-4 shrink-0" aria-hidden="true" />
                 <span className="truncate">{membership.organizationName}</span>
@@ -91,7 +91,7 @@ export function OrgProfileMenu({
             <button
               type="submit"
               role="menuitem"
-              className="flex w-full items-center gap-1.5 rounded-md px-1.5 py-1 text-sm outline-hidden select-none hover:bg-accent hover:text-accent-foreground"
+              className="flex w-full items-center gap-1.5 rounded-md px-1.5 py-1 text-sm outline-hidden select-none transition-all hover:bg-accent hover:text-accent-foreground active:translate-y-px"
             >
               <UserRound className="size-4 shrink-0" aria-hidden="true" />
               Personal dashboard
@@ -102,7 +102,7 @@ export function OrgProfileMenu({
             <button
               type="submit"
               role="menuitem"
-              className="flex w-full items-center gap-1.5 rounded-md px-1.5 py-1 text-sm outline-hidden select-none hover:bg-accent hover:text-accent-foreground"
+              className="flex w-full items-center gap-1.5 rounded-md px-1.5 py-1 text-sm outline-hidden select-none transition-all hover:bg-accent hover:text-accent-foreground active:translate-y-px"
             >
               <LogOut className="size-4" aria-hidden="true" />
               Sign out

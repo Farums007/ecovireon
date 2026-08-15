@@ -69,7 +69,7 @@ export function ForgotPasswordForm({ sent }: { sent: boolean }) {
         <p className="mt-6 text-center text-sm text-muted-foreground">
           <Link
             href="/login"
-            className="font-medium text-primary underline-offset-4 hover:underline"
+            className="font-medium text-primary underline-offset-4 transition-all hover:underline active:translate-y-px"
           >
             Back to sign in
           </Link>

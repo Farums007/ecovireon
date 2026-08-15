@@ -17,7 +17,7 @@ function ActionTile({
   label: string;
 }) {
   const className =
-    "flex flex-col items-center gap-2 rounded-xl border border-border/80 bg-background px-3 py-4 text-center text-sm font-medium text-foreground transition-colors active:bg-muted";
+    "flex flex-col items-center gap-2 rounded-xl border border-border/80 bg-background px-3 py-4 text-center text-sm font-medium text-foreground transition-all active:translate-y-px active:bg-muted";
   const content = (
     <>
       <span className="flex size-11 items-center justify-center rounded-full bg-primary/10">
@@ -86,7 +86,7 @@ export function QuickActions({
                 key={project.id}
                 href={`/projects/${project.id}/observations/new`}
                 onClick={() => setPickerOpen(false)}
-                className="rounded-lg px-3 py-3 text-base font-medium text-foreground hover:bg-muted"
+                className="rounded-lg px-3 py-3 text-base font-medium text-foreground transition-all hover:bg-muted active:translate-y-px"
               >
                 {project.name}
               </Link>

@@ -47,7 +47,7 @@ export default async function FieldOperationsPage() {
               href={`/projects/${observation.projectId}/field-operations`}
               className="rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
             >
-              <Card className="h-full border-border/80 transition-all hover:-translate-y-0.5 hover:shadow-md">
+              <Card className="h-full border-border/80 transition-all hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:shadow-none">
                 <CardHeader>
                   <div className="flex items-center justify-between gap-2">
                     <CardTitle className="text-sm font-semibold">

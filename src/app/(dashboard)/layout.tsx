@@ -67,7 +67,7 @@ export default async function DashboardLayout({
               <Link
                 href="/activity"
                 aria-label="Activity"
-                className="inline-flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                className="inline-flex size-9 items-center justify-center rounded-full text-muted-foreground transition-all hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:translate-y-px"
               >
                 <Bell className="size-4.5" aria-hidden="true" />
               </Link>

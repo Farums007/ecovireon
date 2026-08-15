@@ -31,7 +31,7 @@ export default async function ActivityPage() {
               <Link
                 key={event.id}
                 href={event.href}
-                className="block px-4 py-3 transition-colors hover:bg-muted/50"
+                className="block px-4 py-3 transition-all hover:bg-muted/50 active:translate-y-px"
               >
                 <p className="text-sm text-foreground/90">{event.label}</p>
                 <p className="text-xs text-muted-foreground">

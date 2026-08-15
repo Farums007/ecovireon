@@ -33,7 +33,7 @@ export default async function ReportsPage({
       <div>
         <Link
           href={`/projects/${id}`}
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-all hover:text-foreground active:translate-y-px"
         >
           <ArrowLeft className="size-4" aria-hidden="true" />
           Back to {project.name}

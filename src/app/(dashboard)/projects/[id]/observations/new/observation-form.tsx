@@ -162,7 +162,7 @@ export function ObservationForm({ projectId }: { projectId: string }) {
             <Label htmlFor="photos">Photos</Label>
             <label
               htmlFor="photos"
-              className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed border-border py-6 text-sm font-medium text-muted-foreground transition-colors hover:border-primary/50 hover:text-foreground"
+              className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed border-border py-6 text-sm font-medium text-muted-foreground transition-all hover:border-primary/50 hover:text-foreground active:translate-y-px"
             >
               <Camera className="size-5" aria-hidden="true" />
               Take or choose photos

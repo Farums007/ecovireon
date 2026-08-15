@@ -31,7 +31,7 @@ export default async function DonatePage() {
         {profile && (
           <Link
             href={profile.accountType === "individual" ? "/account" : "/dashboard"}
-            className="mb-6 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            className="mb-6 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-all hover:text-foreground active:translate-y-px"
           >
             <ArrowLeft className="size-4" aria-hidden="true" />
             Back to your dashboard

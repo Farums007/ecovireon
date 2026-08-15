@@ -24,7 +24,7 @@ export function NewObservationFab({
       <Link
         href="/projects/new"
         aria-label="Create a project"
-        className="fixed right-4 bottom-20 z-40 flex size-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform active:scale-95 lg:hidden"
+        className="fixed right-4 bottom-20 z-40 flex size-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform active:translate-y-px active:scale-95 lg:hidden"
       >
         <Plus className="size-6" aria-hidden="true" />
       </Link>
@@ -36,7 +36,7 @@ export function NewObservationFab({
       <Link
         href={`/projects/${projects[0].id}/observations/new`}
         aria-label="New observation"
-        className="fixed right-4 bottom-20 z-40 flex size-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform active:scale-95 lg:hidden"
+        className="fixed right-4 bottom-20 z-40 flex size-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform active:translate-y-px active:scale-95 lg:hidden"
       >
         <Plus className="size-6" aria-hidden="true" />
       </Link>
@@ -50,7 +50,7 @@ export function NewObservationFab({
         onClick={() => setOpen(true)}
         aria-label="New observation"
         aria-haspopup="dialog"
-        className="fixed right-4 bottom-20 z-40 flex size-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform active:scale-95 lg:hidden"
+        className="fixed right-4 bottom-20 z-40 flex size-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform active:translate-y-px active:scale-95 lg:hidden"
       >
         <Plus className="size-6" aria-hidden="true" />
       </button>
@@ -61,7 +61,7 @@ export function NewObservationFab({
               key={project.id}
               href={`/projects/${project.id}/observations/new`}
               onClick={() => setOpen(false)}
-              className="rounded-lg px-3 py-3 text-base font-medium text-foreground hover:bg-muted"
+              className="rounded-lg px-3 py-3 text-base font-medium text-foreground transition-all hover:bg-muted active:translate-y-px"
             >
               {project.name}
             </Link>

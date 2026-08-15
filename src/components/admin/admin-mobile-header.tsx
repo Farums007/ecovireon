@@ -18,7 +18,7 @@ export function AdminMobileHeader({
         onClick={onOpenMenu}
         aria-label="Open menu"
         aria-haspopup="dialog"
-        className="inline-flex size-9 shrink-0 items-center justify-center rounded-md text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        className="inline-flex size-9 shrink-0 items-center justify-center rounded-md text-foreground transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:translate-y-px"
       >
         <Menu className="size-5" aria-hidden="true" />
       </button>

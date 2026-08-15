@@ -77,7 +77,7 @@ export default async function ProjectsPage() {
               href={`/projects/${project.id}`}
               className="rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
             >
-              <Card className="h-full border-border/80 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md">
+              <Card className="h-full border-border/80 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md active:translate-y-0 active:shadow-none">
                 <CardHeader>
                   <div className="flex items-start justify-between gap-2">
                     <CardTitle className="text-base">{project.name}</CardTitle>

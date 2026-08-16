@@ -7,7 +7,7 @@ import {
   type DonateFormState,
 } from "@/app/donate/actions";
 import { PRICE_PER_TREE_KOBO } from "@/lib/donations";
-import { formatNaira } from "@/lib/format";
+import { formatApproxForeignEquivalents, formatNaira } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -70,6 +70,9 @@ export function DonateForm({
               </p>
               <p className="text-2xl font-bold text-foreground">
                 {formatNaira(treeCount * PRICE_PER_TREE_KOBO)}
+              </p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                {formatApproxForeignEquivalents(treeCount * PRICE_PER_TREE_KOBO)}
               </p>
             </div>
           </div>
